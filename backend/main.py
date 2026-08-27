@@ -12,12 +12,19 @@ from database import engine, get_db
 from routers import matches
 
 try:
-    from services.matching_engine import get_model, material_similarity, find_matches, compute_embedding
+    from services.matching_engine import (
+        get_model,
+        material_similarity,
+        find_matches,
+        compute_embedding,
+        calculate_match_score,
+    )
 except Exception as e:
     get_model = None
     material_similarity = None
     find_matches = None
     compute_embedding = None
+    calculate_match_score = None
 
 try:
     from supabase_client import supabase
@@ -232,125 +239,6 @@ app.include_router(matches.router, prefix="/api")
 app.include_router(matches.router)
 
 # ─── AI Match Generation Engine ───────────────────────────────────────────────
-
-MATERIAL_SYNONYMS = {
-    "copper": ["copper", "cu", "copper scrap", "copper wire", "copper alloy"],
-    "aluminium": ["aluminium", "aluminum", "al", "aluminium scrap", "al scrap"],
-    "steel": ["steel", "ms", "mild steel", "steel scrap", "iron"],
-    "plastic": ["plastic", "hdpe", "pp", "pet", "polymer", "resin"],
-    "paper": ["paper", "cardboard", "carton", "newsprint"],
-}
-
-def get_material_similarity(mat1: str, mat2: str) -> float:
-    """Compute semantic material similarity using SentenceTransformer embeddings with fallback to synonym groups."""
-    mat1_str = (mat1 or "").strip()
-    mat2_str = (mat2 or "").strip()
-    if not mat1_str or not mat2_str:
-        return 0.0
-
-    if mat1_str.lower() == mat2_str.lower():
-        return 1.0
-
-    # Try embedding-based semantic similarity first if matching engine is loaded
-    if material_similarity:
-        try:
-            ai_sim = material_similarity(mat1_str, mat2_str)
-            if ai_sim >= 0.60:
-                return float(ai_sim)
-        except Exception:
-            pass
-
-    mat1_lower = mat1_str.lower()
-    mat2_lower = mat2_str.lower()
-    
-    # Find which synonym groups each material belongs to
-    group1 = None
-    group2 = None
-    for group, synonyms in MATERIAL_SYNONYMS.items():
-        if any(s in mat1_lower for s in synonyms):
-            group1 = group
-        if any(s in mat2_lower for s in synonyms):
-            group2 = group
-    
-    if group1 and group2 and group1 == group2:
-        return 0.92  # Same material family, slightly different naming
-    
-    # Check for partial string match
-    if mat1_lower in mat2_lower or mat2_lower in mat1_lower:
-        return 0.85
-    
-    return 0.0  # No match
-
-def estimate_distance(loc1: str, loc2: str) -> float:
-    """Estimate distance in km between two location strings (simplified for MVP)."""
-    if loc1.lower() == loc2.lower():
-        return 2.0
-    city1 = loc1.split()[0].lower()
-    city2 = loc2.split()[0].lower()
-    if city1 == city2:
-        return 10.0 + hash(f"{loc1}{loc2}") % 20  # 10–30 km within same city
-    return 150.0  # different cities
-
-def calculate_match_score(resource: models.Resource, requirement: models.Requirement) -> dict:
-    """
-    Hybrid recommendation engine:
-    Layer 1 — Rule-based filter
-    Layer 2 — Material semantic similarity
-    Layer 3 — Weighted scoring
-    """
-    # Layer 1: Hard filters
-    material_sim = get_material_similarity(resource.materialType, requirement.materialType)
-    if material_sim == 0.0:
-        return None  # Reject — incompatible material
-
-    distance_km = estimate_distance(resource.location, requirement.location)
-    max_radius = 200  # km
-    if distance_km > max_radius:
-        return None  # Outside delivery radius
-
-    # Layer 3: Weighted score calculation
-    # Material Compatibility (40%)
-    material_score = material_sim * 100
-
-    # Geographic Proximity (25%)
-    geo_score = max(0, (1 - distance_km / max_radius)) * 100
-
-    # Quantity Compatibility (20%)
-    if resource.quantity >= requirement.quantity:
-        qty_score = 100
-    else:
-        qty_score = (resource.quantity / requirement.quantity) * 100
-
-    # Quality Compatibility (10%)
-    if resource.quality.lower() == requirement.quality.lower():
-        quality_score = 100
-    elif any(w in resource.quality.lower() for w in requirement.quality.lower().split()):
-        quality_score = 80
-    else:
-        quality_score = 50
-
-    # Time Availability (5%)
-    avail_score = 100 if "immediate" in resource.availability.lower() else 70
-
-    final_score = (
-        material_score * 0.40 +
-        geo_score      * 0.25 +
-        qty_score      * 0.20 +
-        quality_score  * 0.10 +
-        avail_score    * 0.05
-    )
-
-    return {
-        "score": round(final_score, 1),
-        "distance_km": round(distance_km, 1),
-        "breakdown": {
-            "material": round(material_score, 1),
-            "geo": round(geo_score, 1),
-            "quantity": round(qty_score, 1),
-            "quality": round(quality_score, 1),
-            "availability": round(avail_score, 1),
-        }
-    }
 
 @app.post("/api/generate-matches")
 def generate_matches(db: Session = Depends(get_db)):
