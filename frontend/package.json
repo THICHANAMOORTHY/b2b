@@ -1,0 +1,38 @@
+{
+  "name": "circula-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test:db": "node test-supabase.mjs",
+    "api": "cd ../backend && .\\venv\\Scripts\\uvicorn.exe main:app --host 0.0.0.0 --port 8000 --reload",
+    "dev:all": "concurrently --names \"API,UI\" --prefix-colors \"cyan,green\" \"npm run api\" \"npm run dev\"",
+    "seed": "cd ../backend && .\\venv\\Scripts\\python.exe seed.py",
+    "match": "curl -s -X POST http://localhost:8000/api/generate-matches",
+    "setup": "npm run seed && npm run match"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.10.0",
+    "@supabase/supabase-js": "^2.112.4",
+    "date-fns": "^4.4.0",
+    "lucide-react": "^1.34.0",
+    "next": "16.3.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "recharts": "^3.10.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "concurrently": "^10.0.5",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
