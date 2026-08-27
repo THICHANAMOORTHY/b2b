@@ -3,7 +3,17 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle2, Truck, FileText, CheckSquare, MessageSquare, MapPin, Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { API_BASE_URL, Match, Resource, Requirement, Company } from '@/lib/api';
+import {
+  Match,
+  Resource,
+  Requirement,
+  Company,
+  fetchMatches,
+  fetchResources,
+  fetchRequirements,
+  fetchCompanies,
+  updateMatchStatus,
+} from '@/lib/api';
 
 interface TransactionData {
   match: Match;
@@ -24,10 +34,10 @@ export default function Exchange() {
     async function load() {
       try {
         const [matchesRes, resourcesRes, requirementsRes, companiesRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/matches`).then(r => r.json()),
-          fetch(`${API_BASE_URL}/api/resources`).then(r => r.json()),
-          fetch(`${API_BASE_URL}/api/requirements`).then(r => r.json()),
-          fetch(`${API_BASE_URL}/api/companies`).then(r => r.json()),
+          fetchMatches(),
+          fetchResources(),
+          fetchRequirements(),
+          fetchCompanies(),
         ]);
 
         // Find the most recent accepted (or any) match to show in exchange view
@@ -41,10 +51,10 @@ export default function Exchange() {
           return;
         }
 
-        const resource: Resource = resourcesRes.find((r: Resource) => r.id === acceptedMatch.resourceId);
-        const requirement: Requirement = requirementsRes.find((r: Requirement) => r.id === acceptedMatch.requirementId);
-        const supplier: Company = companiesRes.find((c: Company) => c.id === resource?.companyId);
-        const buyer: Company = companiesRes.find((c: Company) => c.id === requirement?.companyId);
+        const resource = resourcesRes.find((r) => r.id === acceptedMatch.resourceId);
+        const requirement = requirementsRes.find((r) => r.id === acceptedMatch.requirementId);
+        const supplier = companiesRes.find((c) => c.id === resource?.companyId);
+        const buyer = companiesRes.find((c) => c.id === requirement?.companyId);
 
         if (!resource || !requirement || !supplier || !buyer) {
           setError('Could not load transaction details.');
@@ -65,12 +75,10 @@ export default function Exchange() {
     if (!data) return;
     setConfirming(true);
     try {
-      await fetch(`${API_BASE_URL}/api/matches/${data.match.id}/status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'COMPLETED' }),
-      });
+      await updateMatchStatus(data.match.id, 'COMPLETED');
       setConfirmed(true);
+    } catch {
+      alert('Failed to confirm exchange. Please try again.');
     } finally {
       setConfirming(false);
     }

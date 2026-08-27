@@ -1,7 +1,28 @@
 import type { NextConfig } from "next";
 
+const backendUrl = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8000";
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${backendUrl}/api/:path*`,
+      },
+      {
+        source: "/matches/:path*",
+        destination: `${backendUrl}/matches/:path*`,
+      },
+      {
+        source: "/resources/:path*",
+        destination: `${backendUrl}/resources/:path*`,
+      },
+      {
+        source: "/requirements/:path*",
+        destination: `${backendUrl}/requirements/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

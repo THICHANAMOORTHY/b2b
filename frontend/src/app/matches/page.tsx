@@ -3,7 +3,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { Sparkles, ArrowRight, Zap, Target, Scale, Clock, CheckCircle2, XCircle, Loader2, RefreshCw } from "lucide-react";
 import Link from "next/link";
-import { API_BASE_URL, Match, Resource, Requirement, Company } from "@/lib/api";
+import {
+  Match,
+  Resource,
+  Requirement,
+  Company,
+  fetchMatches,
+  fetchResources,
+  fetchRequirements,
+  fetchCompanies,
+  updateMatchStatus,
+  generateMatches,
+} from "@/lib/api";
 
 export default function Matches() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -17,10 +28,10 @@ export default function Matches() {
   const fetchAll = useCallback(async () => {
     try {
       const [m, res, req, comp] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/matches`).then((r) => r.json()),
-        fetch(`${API_BASE_URL}/api/resources`).then((r) => r.json()),
-        fetch(`${API_BASE_URL}/api/requirements`).then((r) => r.json()),
-        fetch(`${API_BASE_URL}/api/companies`).then((r) => r.json()),
+        fetchMatches(),
+        fetchResources(),
+        fetchRequirements(),
+        fetchCompanies(),
       ]);
       setMatches(m);
       setResources(res);
@@ -40,7 +51,7 @@ export default function Matches() {
   const handleGenerateMatches = async () => {
     setGenerating(true);
     try {
-      await fetch(`${API_BASE_URL}/api/generate-matches`, { method: "POST" });
+      await generateMatches();
       await fetchAll();
     } finally {
       setGenerating(false);
@@ -50,11 +61,7 @@ export default function Matches() {
   const handleUpdateStatus = async (matchId: string, status: string) => {
     setUpdatingId(matchId);
     try {
-      await fetch(`${API_BASE_URL}/api/matches/${matchId}/status`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
+      await updateMatchStatus(matchId, status);
       await fetchAll();
     } finally {
       setUpdatingId(null);
