@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:db": "node test-supabase.mjs",
+    "test:db": "node scripts/test-supabase.mjs",
     "api": "cd ../backend && .\\venv\\Scripts\\uvicorn.exe main:app --host 0.0.0.0 --port 8000 --reload",
     "dev:all": "concurrently --names \"API,UI\" --prefix-colors \"cyan,green\" \"npm run api\" \"npm run dev\"",
     "seed": "cd ../backend && .\\venv\\Scripts\\python.exe seed.py",
