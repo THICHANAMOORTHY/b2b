@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import {
   X,
-  Sprout,
   Plus,
   Trash2,
   Copy,
@@ -12,7 +11,7 @@ import {
   LayoutGrid,
   CheckCircle2,
   Loader2,
-  Layers,
+  Building2,
 } from "lucide-react";
 import { useCompany } from "@/lib/CompanyContext";
 
@@ -25,50 +24,42 @@ interface CompanyRow {
 }
 
 const INDUSTRY_OPTIONS = [
-  "Agriculture & Farming",
-  "Biomass & Bioenergy",
-  "Organic Fertilizers & Soil",
-  "Agro-Processing & Mills",
   "Manufacturing",
   "Metallurgy & Steel",
+  "Automotive & Foundry",
   "Chemical & Petrochemical",
   "Plastics & Polymers",
   "Paper & Packaging",
+  "Electronics & Assemblies",
   "Construction & Materials",
   "Recycling & Waste Management",
 ];
 
-const VERIFICATION_OPTIONS = ["Verified", "Pending", "Organic Certified", "ISO 14044 Certified", "Audit Cleared"];
+const VERIFICATION_OPTIONS = ["Verified", "Pending", "ISO 14044 Certified", "Audit Cleared"];
 
 const SAMPLE_ORGANIZATIONS: Omit<CompanyRow, "id_temp">[] = [
   {
-    name: "Cauvery Organic Agro Collective",
-    industry: "Agriculture & Farming",
-    location: "Tanjore Bio Hub",
-    verificationStatus: "Organic Certified",
+    name: "ABC Auto Components Foundry",
+    industry: "Automotive & Foundry",
+    location: "Chennai Sriperumbudur",
+    verificationStatus: "Verified",
   },
   {
-    name: "Apex Biomass & Biofuel Refinery",
-    industry: "Biomass & Bioenergy",
-    location: "Trichy Industrial Corridor",
+    name: "Southern Copper Alloys & Wire Corp",
+    industry: "Metallurgy & Steel",
+    location: "Ambattur Industrial Estate",
     verificationStatus: "ISO 14044 Certified",
   },
   {
-    name: "GreenEarth Soil Nutrition Works",
-    industry: "Organic Fertilizers & Soil",
-    location: "Coimbatore SIDCO",
+    name: "Apex Polymer & HDPE Reprocessors",
+    industry: "Plastics & Polymers",
+    location: "Guindy SIDCO",
     verificationStatus: "Verified",
   },
   {
-    name: "Southern Bagasse Paper Products",
+    name: "Tamil Nadu Circular Paper & Pulp",
     industry: "Paper & Packaging",
-    location: "Madurai Hub",
-    verificationStatus: "Verified",
-  },
-  {
-    name: "EcoSteel Metallurgical Works",
-    industry: "Metallurgy & Steel",
-    location: "Salem Industrial Estate",
+    location: "Madurai Corridor",
     verificationStatus: "Audit Cleared",
   },
 ];
@@ -94,21 +85,21 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
     {
       id_temp: "row-1",
       name: "",
-      industry: "Agriculture & Farming",
+      industry: "Manufacturing",
       location: "",
       verificationStatus: "Verified",
     },
     {
       id_temp: "row-2",
       name: "",
-      industry: "Biomass Processing & Pellets",
+      industry: "Metallurgy & Steel",
       location: "",
       verificationStatus: "Verified",
     },
     {
       id_temp: "row-3",
       name: "",
-      industry: "Organic Fertilizers & Soil",
+      industry: "Plastics & Polymers",
       location: "",
       verificationStatus: "ISO 14044 Certified",
     },
@@ -121,7 +112,7 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
       {
         id_temp: newId,
         name: "",
-        industry: "Agriculture & Farming",
+        industry: "Manufacturing",
         location: "",
         verificationStatus: "Verified",
       },
@@ -147,7 +138,7 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
         {
           id_temp: "row-1",
           name: "",
-          industry: "Agriculture & Farming",
+          industry: "Manufacturing",
           location: "",
           verificationStatus: "Verified",
         },
@@ -159,77 +150,63 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
 
   const handleRowChange = (index: number, field: keyof CompanyRow, value: string) => {
     setRows((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
     });
   };
 
   const handleLoadSamples = () => {
-    const sampleRows: CompanyRow[] = SAMPLE_ORGANIZATIONS.map((s, idx) => ({
-      ...s,
-      id_temp: `sample-${Date.now()}-${idx}`,
+    const populated: CompanyRow[] = SAMPLE_ORGANIZATIONS.map((sample, idx) => ({
+      ...sample,
+      id_temp: `sample-${idx + 1}`,
     }));
-    setRows(sampleRows);
-    setErrorMessage(null);
+    setRows(populated);
   };
 
-  const handleParseCsv = () => {
-    if (!csvText.trim()) {
-      setErrorMessage("Please paste CSV or tabular text first.");
-      return;
-    }
+  const handleApplyCsv = () => {
+    if (!csvText.trim()) return;
 
-    const lines = csvText.split("\n").filter((l) => l.trim().length > 0);
+    const lines = csvText.trim().split("\n");
     const parsed: CompanyRow[] = [];
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const sep = line.includes("\t") ? "\t" : ",";
-      const parts = line.split(sep).map((p) => p.trim());
-
-      if (i === 0 && parts[0].toLowerCase().includes("name")) {
-        continue;
-      }
-
-      if (parts.length >= 1 && parts[0].length > 0) {
+    lines.forEach((line, idx) => {
+      const parts = line.split(",").map((p) => p.trim());
+      if (parts.length >= 1 && parts[0] !== "") {
         parsed.push({
-          id_temp: `csv-${Date.now()}-${i}`,
-          name: parts[0],
-          industry: parts[1] || "Agriculture & Farming",
-          location: parts[2] || "Coimbatore Hub",
+          id_temp: `csv-row-${idx + 1}`,
+          name: parts[0] || "",
+          industry: parts[1] || "Manufacturing",
+          location: parts[2] || "Chennai",
           verificationStatus: parts[3] || "Verified",
         });
       }
-    }
+    });
 
-    if (parsed.length === 0) {
-      setErrorMessage("No valid rows found in pasted text.");
-      return;
+    if (parsed.length > 0) {
+      setRows(parsed);
+      setActiveTab("form");
     }
-
-    setRows(parsed);
-    setActiveTab("form");
-    setErrorMessage(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
 
-    const validRows = rows.filter((r) => r.name.trim().length > 0);
+    const validRows = rows.filter((r) => r.name.trim() !== "");
+
     if (validRows.length === 0) {
-      setErrorMessage("Please enter at least one organization name.");
+      setErrorMessage("Please enter at least one facility name.");
       return;
     }
 
     setLoading(true);
-    setErrorMessage(null);
 
     try {
       const payload = validRows.map((r) => ({
         name: r.name.trim(),
         industry: r.industry.trim(),
-        location: r.location.trim(),
+        location: r.location.trim() || "Chennai",
         verificationStatus: r.verificationStatus.trim(),
       }));
 
@@ -239,10 +216,10 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
 
       setTimeout(() => {
         handleClose();
-      }, 1400);
+      }, 1200);
     } catch (err: unknown) {
       console.error(err);
-      const msg = err instanceof Error ? err.message : "Failed to add organizations. Please check your backend connection.";
+      const msg = err instanceof Error ? err.message : "Failed to register organizations.";
       setErrorMessage(msg);
     } finally {
       setLoading(false);
@@ -250,60 +227,53 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="agri-card w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-emerald-500/25 shadow-2xl bg-[#0e271a]/95">
-        {/* Modal Header */}
-        <div className="p-6 border-b border-emerald-500/20 bg-gradient-to-r from-[#071910] via-[#0c2417] to-[#0e271a] text-white flex items-center justify-between relative overflow-hidden">
-          <div className="flex items-center gap-3.5 relative z-10">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <Sprout className="w-6 h-6" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
+      <div className="w-full max-w-4xl max-h-[90vh] flex flex-col bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-5 border-b border-[#F1F5F9] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center font-bold">
+              <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-black font-outfit text-white">Enroll Farms & Bio-Enterprises</h2>
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
-                  Batch Session
-                </span>
-              </div>
-              <p className="text-emerald-300/80 text-xs mt-0.5">
-                Onboard agricultural producers, biomass processors, and circular industrial plants.
-              </p>
+              <h2 className="text-lg font-bold text-[#0F172A] font-outfit">Enroll Organizations in Bulk</h2>
+              <p className="text-xs text-[#64748B]">Batch-onboard secondary material producers and circular manufacturers</p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-2 text-slate-300 hover:text-white rounded-full hover:bg-white/10 transition-colors"
+            className="p-1.5 rounded-lg text-[#94A3B8] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* View Mode Switcher & Quick Actions */}
-        <div className="bg-white/[0.02] px-6 py-3 border-b border-emerald-500/15 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-1.5 bg-white/[0.06] p-1 rounded-full border border-emerald-500/20">
+        {/* Tab & Sample Actions */}
+        <div className="px-6 py-3 bg-[#F8FAFC] border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-[#E2E8F0]">
             <button
               type="button"
               onClick={() => setActiveTab("form")}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
                 activeTab === "form"
-                  ? "bg-emerald-500 text-white shadow-sm"
-                  : "text-slate-300 hover:text-white"
+                  ? "bg-[#2563EB] text-white shadow-sm"
+                  : "text-[#64748B] hover:text-[#0F172A]"
               }`}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
-              Grid Table ({rows.length})
+              <span>Grid Form ({rows.length})</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("csv")}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
                 activeTab === "csv"
-                  ? "bg-emerald-500 text-white shadow-sm"
-                  : "text-slate-300 hover:text-white"
+                  ? "bg-[#2563EB] text-white shadow-sm"
+                  : "text-[#64748B] hover:text-[#0F172A]"
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
-              Paste CSV / Text
+              <span>CSV Import</span>
             </button>
           </div>
 
@@ -311,212 +281,159 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
             <button
               type="button"
               onClick={handleLoadSamples}
-              className="flex items-center gap-1.5 text-xs font-bold text-emerald-300 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 px-3.5 py-1.5 rounded-full transition-colors"
+              className="px-3 py-1.5 bg-white border border-[#E2E8F0] hover:bg-[#F1F5F9] text-[#2563EB] rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              Load 5 Sample Farms & Hubs
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Load Industrial Sample Nodes</span>
             </button>
+
+            {activeTab === "form" && (
+              <button
+                type="button"
+                onClick={handleAddRow}
+                className="px-3 py-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Row</span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4 text-slate-200">
-          {errorMessage && (
-            <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300 text-xs flex items-center gap-2">
-              <span className="font-bold">Error:</span> {errorMessage}
-            </div>
-          )}
-
+        {/* Content Body */}
+        <div className="flex-1 overflow-y-auto p-6">
           {success ? (
-            <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
-              <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center py-12 gap-3">
+              <div className="w-14 h-14 rounded-full bg-[#F0FDF4] text-[#16A34A] border border-[#DCFCE7] flex items-center justify-center">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-black text-white font-outfit">Organizations Enrolled!</h3>
-              <p className="text-slate-300 text-xs max-w-md">
-                Successfully onboarded <span className="font-bold text-emerald-400">{createdCount}</span> new{" "}
-                organizations into the Circula bioeconomy network.
+              <p className="text-lg font-bold text-[#0F172A] font-outfit">
+                {createdCount} Organizations Successfully Enrolled!
+              </p>
+              <p className="text-xs text-[#64748B] text-center">
+                Industrial nodes are now available in the top perspective switcher.
               </p>
             </div>
           ) : activeTab === "csv" ? (
-            <div className="space-y-3">
-              <div className="p-4 rounded-2xl bg-white/[0.04] border border-emerald-500/15 text-xs text-slate-300 space-y-1">
-                <p className="font-bold text-white">Format Guide:</p>
-                <p>Paste one organization per line with fields separated by commas or tabs:</p>
-                <code className="block bg-black/40 p-2.5 rounded-xl border border-emerald-500/20 text-emerald-400 font-mono text-[11px] mt-1">
-                  Cauvery Organic Agro Collective, Agriculture & Farming, Tanjore, Organic Certified
-                </code>
-              </div>
+            <div className="space-y-4">
+              <p className="text-xs text-[#64748B]">
+                Paste comma-separated rows in format: <code className="bg-[#F1F5F9] px-1.5 py-0.5 rounded text-[#0F172A] font-bold">Facility Name, Industry, Location, VerificationStatus</code>
+              </p>
               <textarea
+                rows={8}
                 value={csvText}
                 onChange={(e) => setCsvText(e.target.value)}
-                placeholder="Paste farm/hub list here..."
-                rows={8}
-                className="w-full p-3.5 text-xs font-mono bg-white/[0.05] border border-emerald-500/20 rounded-2xl focus:border-emerald-400 outline-none text-white transition-colors"
+                placeholder="Apex Steel Works, Metallurgy & Steel, Chennai, Verified&#10;Southern Polymer Corp, Plastics & Polymers, Sriperumbudur, ISO 14044 Certified"
+                className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3.5 text-xs text-[#0F172A] font-mono focus:outline-none focus:border-[#2563EB]"
               />
               <button
                 type="button"
-                onClick={handleParseCsv}
-                className="agri-btn-secondary text-xs py-2 px-4"
+                onClick={handleApplyCsv}
+                className="px-4 py-2 bg-[#2563EB] text-white rounded-xl text-xs font-semibold hover:bg-[#1D4ED8]"
               >
-                <Layers className="w-3.5 h-3.5 text-emerald-400" /> Parse into Table Rows
+                Parse into Grid Form
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
-              {rows.map((row, idx) => (
-                <div
-                  key={row.id_temp}
-                  className="p-4 rounded-2xl bg-white/[0.03] border border-emerald-500/15 hover:border-emerald-500/30 transition-all space-y-3 group relative"
-                >
-                  <div className="flex items-center justify-between text-xs text-slate-300 font-medium">
-                    <span className="flex items-center gap-1.5 font-bold text-white font-outfit">
-                      <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[10px] font-bold">
-                        {idx + 1}
-                      </span>
-                      Organization #{idx + 1}
-                    </span>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              {errorMessage && (
+                <div className="p-3 bg-[#FEF2F2] border border-[#FEE2E2] rounded-xl text-xs text-[#EF4444] font-semibold">
+                  {errorMessage}
+                </div>
+              )}
+
+              <div className="space-y-2.5">
+                {rows.map((row, idx) => (
+                  <div
+                    key={row.id_temp}
+                    className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl flex items-center gap-3 text-xs"
+                  >
+                    <span className="w-6 text-center font-bold text-[#94A3B8]">{idx + 1}</span>
+
+                    <input
+                      type="text"
+                      placeholder="Organization / Facility Name *"
+                      value={row.name}
+                      onChange={(e) => handleRowChange(idx, "name", e.target.value)}
+                      className="flex-1 bg-white border border-[#E2E8F0] rounded-lg px-3 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB]"
+                    />
+
+                    <select
+                      value={row.industry}
+                      onChange={(e) => handleRowChange(idx, "industry", e.target.value)}
+                      className="w-44 bg-white border border-[#E2E8F0] rounded-lg px-2.5 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB]"
+                    >
+                      {INDUSTRY_OPTIONS.map((ind) => (
+                        <option key={ind} value={ind}>{ind}</option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="text"
+                      placeholder="City / Hub"
+                      value={row.location}
+                      onChange={(e) => handleRowChange(idx, "location", e.target.value)}
+                      className="w-36 bg-white border border-[#E2E8F0] rounded-lg px-3 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB]"
+                    />
+
+                    <select
+                      value={row.verificationStatus}
+                      onChange={(e) => handleRowChange(idx, "verificationStatus", e.target.value)}
+                      className="w-32 bg-white border border-[#E2E8F0] rounded-lg px-2 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB]"
+                    >
+                      {VERIFICATION_OPTIONS.map((ver) => (
+                        <option key={ver} value={ver}>{ver}</option>
+                      ))}
+                    </select>
+
                     <div className="flex items-center gap-1">
                       <button
                         type="button"
                         onClick={() => handleDuplicateRow(idx)}
-                        title="Duplicate this row"
-                        className="p-1.5 text-slate-400 hover:text-white rounded-md transition-colors"
+                        className="p-1.5 text-[#94A3B8] hover:text-[#2563EB] hover:bg-white rounded-lg transition"
+                        title="Duplicate row"
                       >
                         <Copy className="w-3.5 h-3.5" />
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteRow(idx)}
+                        className="p-1.5 text-[#94A3B8] hover:text-[#EF4444] hover:bg-white rounded-lg transition"
                         title="Remove row"
-                        className="p-1.5 text-slate-400 hover:text-red-400 rounded-md transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
+                ))}
+              </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-                    {/* Name */}
-                    <div className="md:col-span-4">
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-emerald-300 mb-1">
-                        Organization Name <span className="text-emerald-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={row.name}
-                        onChange={(e) => handleRowChange(idx, "name", e.target.value)}
-                        placeholder="e.g. Cauvery Organic Agro Collective"
-                        className="w-full bg-white/[0.05] border border-emerald-500/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    {/* Industry */}
-                    <div className="md:col-span-3">
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-emerald-300 mb-1">
-                        Sector
-                      </label>
-                      <select
-                        value={row.industry}
-                        onChange={(e) => handleRowChange(idx, "industry", e.target.value)}
-                        className="w-full bg-[#0a2316] border border-emerald-500/20 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400"
-                      >
-                        {INDUSTRY_OPTIONS.map((ind) => (
-                          <option key={ind} value={ind}>
-                            {ind}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Location */}
-                    <div className="md:col-span-3">
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-emerald-300 mb-1">
-                        Location / Hub
-                      </label>
-                      <input
-                        type="text"
-                        value={row.location}
-                        onChange={(e) => handleRowChange(idx, "location", e.target.value)}
-                        placeholder="e.g. Tanjore, Coimbatore"
-                        className="w-full bg-white/[0.05] border border-emerald-500/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    {/* Status */}
-                    <div className="md:col-span-2">
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-emerald-300 mb-1">
-                        Status
-                      </label>
-                      <select
-                        value={row.verificationStatus}
-                        onChange={(e) => handleRowChange(idx, "verificationStatus", e.target.value)}
-                        className="w-full bg-[#0a2316] border border-emerald-500/20 rounded-xl px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-400"
-                      >
-                        {VERIFICATION_OPTIONS.map((v) => (
-                          <option key={v} value={v}>
-                            {v}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              <button
-                type="button"
-                onClick={handleAddRow}
-                className="w-full py-3 border-2 border-dashed border-emerald-500/20 hover:border-emerald-400/50 hover:bg-emerald-500/5 rounded-2xl text-xs font-bold text-slate-300 hover:text-emerald-300 transition-all flex items-center justify-center gap-2"
-              >
-                <Plus className="w-4 h-4 text-emerald-400" />
-                Add Another Organization Row
-              </button>
-            </div>
+              <div className="pt-4 border-t border-[#F1F5F9] flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-5 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Enrolling Organizations...</span>
+                    </>
+                  ) : (
+                    <span>Register {rows.filter(r => r.name.trim() !== "").length || 1} Organizations</span>
+                  )}
+                </button>
+              </div>
+            </form>
           )}
-        </form>
-
-        {/* Footer */}
-        {!success && (
-          <div className="p-5 border-t border-emerald-500/15 bg-white/[0.02] flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="text-xs text-slate-300">
-              Valid entries to enroll:{" "}
-              <span className="font-bold text-white">
-                {rows.filter((r) => r.name.trim().length > 0).length} organization profile(s)
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <button
-                type="button"
-                onClick={handleClose}
-                disabled={loading}
-                className="flex-1 sm:flex-none px-5 py-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 text-xs font-bold transition border border-emerald-500/20"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={loading}
-                className="flex-1 sm:flex-none agri-btn-primary text-xs py-2.5 px-6"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Enrolling...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-3.5 h-3.5" />
-                    Enroll {rows.filter((r) => r.name.trim().length > 0).length || rows.length} Organizations
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

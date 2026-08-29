@@ -7,360 +7,128 @@
     --font-space: 'Space Grotesk', sans-serif;
     --font-ibm-sans: 'IBM Plex Sans', sans-serif;
     --font-ibm-mono: 'IBM Plex Mono', monospace;
-    
-    /* Delisas Agriculture & Bioeconomy Theme Palette */
-    --forest-deep: #071910;
-    --forest-surface: #0e271a;
-    --forest-card: rgba(16, 42, 29, 0.85);
-    --forest-border: rgba(52, 211, 153, 0.15);
-    
-    --sand-cream: #faf9f5;
-    --sand-surface: #f4f2ea;
-    
-    --sage-emerald: #10b981;
-    --sage-glow: rgba(16, 185, 129, 0.3);
-    
-    --harvest-gold: #f59e0b;
-    --harvest-glow: rgba(245, 158, 11, 0.3);
-    
-    --meadow-lime: #84cc16;
 
-    /* Circula Industrial Blueprint Palette */
-    --steel-mist: #EEF1EF;
-    --blueprint-surface: #FFFFFF;
-    --ink: #12181B;
-    --ink-muted: #5B6763;
-    --patina: #2F6D53;
-    --patina-dark: #1F4A39;
-    --amber: #B96A2C;
-    --alert: #B3261E;
-    --border: #DDE3DF;
+    /* Enterprise Circula Blue & Light Theme Palette */
+    --bg-canvas: #F8FAFC;
+    --bg-surface: #FFFFFF;
+    --bg-surface-subtle: #F1F5F9;
+    --border-main: #E2E8F0;
+    --border-subtle: #EDF2F7;
+    
+    --brand-primary: #2563EB;
+    --brand-primary-dark: #1D4ED8;
+    --brand-primary-deep: #1E40AF;
+    --brand-light: #EFF6FF;
+    --brand-border: #BFDBFE;
+
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #64748B;
+    --text-subtle: #94A3B8;
+
+    --status-success: #16A34A;
+    --status-success-light: #DCFCE7;
+    --status-warning: #D97706;
+    --status-warning-light: #FEF3C7;
   }
 
   * {
-    border-color: rgba(52, 211, 153, 0.12);
+    border-color: #E2E8F0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    background-color: var(--forest-deep);
-    color: #f3f7f4;
-    font-family: var(--font-outfit), sans-serif;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: var(--font-jakarta), sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-outfit), sans-serif;
-    letter-spacing: -0.03em;
-    font-weight: 800;
+    letter-spacing: -0.025em;
+    font-weight: 700;
   }
 }
 
 @layer utilities {
-  /* Delisas Organic Glass Surfaces */
-  .agri-glass {
-    background: rgba(14, 38, 26, 0.75);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(52, 211, 153, 0.18);
+  /* Enterprise SaaS White Card */
+  .saas-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease-in-out;
   }
 
-  .agri-glass-pill {
-    background: rgba(10, 29, 19, 0.88);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(52, 211, 153, 0.22);
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  .saas-card:hover {
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
   }
 
-  /* Human-Crafted Buttons */
-  .agri-btn-primary {
-    position: relative;
+  /* Watermark icon on KPI cards */
+  .watermark-icon {
+    position: absolute;
+    right: 1.25rem;
+    top: 1.25rem;
+    color: #CBD5E1;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* Trend pill badge */
+  .trend-pill {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.6rem;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
     border-radius: 9999px;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: -0.01em;
-    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  }
-
-  .agri-btn-primary:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 15px 35px -5px rgba(16, 185, 129, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    background: linear-gradient(135deg, #34d399 0%, #059669 100%);
-  }
-
-  .agri-btn-primary:active {
-    transform: translateY(0) scale(0.98);
-  }
-
-  .agri-btn-harvest {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.6rem;
-    border-radius: 9999px;
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: -0.01em;
-    box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  }
-
-  .agri-btn-harvest:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 15px 35px -5px rgba(245, 158, 11, 0.6);
-  }
-
-  .agri-btn-secondary {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.06);
-    color: #f3f7f4;
-    border: 1px solid rgba(52, 211, 153, 0.2);
-    backdrop-filter: blur(10px);
+    font-size: 0.75rem;
     font-weight: 600;
-    font-size: 0.95rem;
-    letter-spacing: -0.01em;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
-  .agri-btn-secondary:hover {
-    background: rgba(52, 211, 153, 0.15);
-    border-color: rgba(52, 211, 153, 0.4);
-    transform: translateY(-2px);
-    color: #ffffff;
+  .trend-pill-blue {
+    background-color: #EFF6FF;
+    color: #2563EB;
+    border: 1px solid #DBEAFE;
   }
 
-  /* Animated Trailing Badge Circle */
-  .agri-arrow-circle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.25);
-    color: white;
-    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  .trend-pill-green {
+    background-color: #F0FDF4;
+    color: #16A34A;
+    border: 1px solid #DCFCE7;
   }
 
-  .agri-btn-primary:hover .agri-arrow-circle,
-  .agri-btn-harvest:hover .agri-arrow-circle,
-  .agri-btn-secondary:hover .agri-arrow-circle {
-    transform: translateX(3px) rotate(45deg);
+  /* Active Sidebar Navigation Item */
+  .nav-active {
+    background-color: #2563EB;
+    color: #FFFFFF !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.35);
   }
 
-  /* Delisas Tactile Bento Cards */
-  .agri-card {
-    background: rgba(14, 38, 26, 0.7);
-    backdrop-filter: blur(18px);
-    border: 1px solid rgba(52, 211, 153, 0.14);
-    border-radius: 1.85rem;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
-    transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  .nav-inactive {
+    color: #64748B;
+    font-weight: 500;
   }
 
-  .agri-card:hover {
-    border-color: rgba(52, 211, 153, 0.4);
-    box-shadow: 0 20px 45px -12px rgba(16, 185, 129, 0.22), 0 0 20px -5px rgba(16, 185, 129, 0.15);
-    transform: translateY(-4px);
-  }
-
-  .agri-card-gold:hover {
-    border-color: rgba(245, 158, 11, 0.45);
-    box-shadow: 0 20px 45px -12px rgba(245, 158, 11, 0.25);
-    transform: translateY(-4px);
-  }
-
-  /* Floating Tag Pill */
-  .agri-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.35rem 0.9rem;
-    border-radius: 9999px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    backdrop-filter: blur(10px);
-  }
-
-  /* Floating natural animation */
-  @keyframes agriFloat {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-8px);
-    }
-  }
-
-  .animate-agri-float {
-    animation: agriFloat 5s ease-in-out infinite;
-  }
-
-  .animate-agri-float-delayed {
-    animation: agriFloat 6.5s ease-in-out infinite 1.8s;
-  }
-
-  /* ─── Circula Industrial Blueprint Design System ─── */
-  .font-display {
-    font-family: var(--font-space), 'Space Grotesk', sans-serif;
-  }
-
-  .font-mono-code {
-    font-family: var(--font-ibm-mono), 'IBM Plex Mono', monospace;
-  }
-
-  .font-ibm-body {
-    font-family: var(--font-ibm-sans), 'IBM Plex Sans', sans-serif;
-  }
-
-  /* Blueprint Grid Pattern */
-  .grid-bg-industrial {
-    background-color: var(--steel-mist);
-    background-image:
-      linear-gradient(rgba(18, 24, 27, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(18, 24, 27, 0.035) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
-
-  .grid-bg-industrial-dark {
-    background-image:
-      linear-gradient(rgba(52, 211, 153, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(52, 211, 153, 0.05) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
-
-  /* Data-plate KPI card: rivet-line bottom, stamped label */
-  .data-plate {
-    background: #FFFFFF;
-    border: 1px solid #DDE3DF;
-    border-radius: 6px;
-    position: relative;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  }
-
-  .data-plate::after {
-    content: "";
-    position: absolute;
-    left: 16px;
-    right: 16px;
-    bottom: 14px;
-    height: 1px;
-    background: repeating-linear-gradient(90deg, #DDE3DF 0 6px, transparent 6px 10px);
-  }
-
-  .data-plate-dark {
-    background: rgba(14, 39, 27, 0.85);
-    border: 1px solid rgba(52, 211, 153, 0.18);
-    border-radius: 6px;
-    position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .data-plate-dark::after {
-    content: "";
-    position: absolute;
-    left: 16px;
-    right: 16px;
-    bottom: 14px;
-    height: 1px;
-    background: repeating-linear-gradient(90deg, rgba(52, 211, 153, 0.2) 0 6px, transparent 6px 10px);
-  }
-
-  /* Ledger row: manifest ticket styling with perforated / color-coded edge */
-  .ledger-row {
-    background: #FFFFFF;
-    border: 1px solid #DDE3DF;
-    border-left: 4px solid var(--patina);
-    border-radius: 4px;
-    transition: all 0.2s ease;
-  }
-
-  .ledger-row:hover {
-    border-color: #B5C4BC;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transform: translateY(-1px);
-  }
-
-  .ledger-row.free {
-    border-left-color: var(--amber);
-  }
-
-  .ledger-row.alert {
-    border-left-color: var(--alert);
-  }
-
-  .ledger-row.blue {
-    border-left-color: #5B7FBE;
-  }
-
-  /* Signature Certification Stamp */
-  .stamp {
-    border: 2.5px solid var(--patina);
-    color: var(--patina);
-    border-radius: 9999px;
-    transform: rotate(-8deg);
-    font-family: var(--font-ibm-mono), 'IBM Plex Mono', monospace;
-    letter-spacing: 0.04em;
-    position: relative;
-    transition: transform 0.3s ease;
-  }
-
-  .stamp:hover {
-    transform: rotate(0deg) scale(1.05);
-  }
-
-  .stamp::before {
-    content: "";
-    position: absolute;
-    inset: 4px;
-    border: 1px dashed var(--patina);
-    border-radius: 9999px;
-    opacity: 0.5;
-  }
-
-  .stamp-amber {
-    border-color: var(--amber);
-    color: var(--amber);
-  }
-
-  .stamp-amber::before {
-    border-color: var(--amber);
+  .nav-inactive:hover {
+    background-color: #F1F5F9;
+    color: #0F172A;
   }
 }
 
-/* Custom Forest scrollbar */
+/* Custom Clean Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #05140d;
+  background: #F1F5F9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #143825;
+  background: #CBD5E1;
   border-radius: 9999px;
-  border: 2px solid #05140d;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #1e5237;
+  background: #94A3B8;
 }
