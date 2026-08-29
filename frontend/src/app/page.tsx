@@ -5,24 +5,14 @@ import {
   Package,
   Search,
   PlusCircle,
-  Building2,
   MapPin,
-  ShieldCheck,
   Trash2,
   Loader2,
   Users,
-  ArrowRightLeft,
   Sparkles,
   ArrowRight,
-  RefreshCw,
-  Layers,
-  CheckCircle2,
-  TrendingUp,
   Leaf,
-  Droplets,
-  ExternalLink,
   ChevronDown,
-  Filter,
 } from "lucide-react";
 import Link from "next/link";
 import { AddResourceModal } from "@/components/AddResourceModal";
@@ -87,8 +77,40 @@ export default function Dashboard() {
   }, [activeCompany]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    let ignore = false;
+    async function load() {
+      try {
+        const [resData, reqData, matchData] = await Promise.all([
+          fetchResources(),
+          fetchRequirements(),
+          fetchMatches(),
+        ]);
+        if (!ignore) {
+          setAllResources(resData);
+          setAllRequirements(reqData);
+          setAllMatches(matchData);
+
+          if (activeCompany) {
+            setResources(resData.filter((r) => r.companyId === activeCompany.id));
+            setRequirements(reqData.filter((r) => r.companyId === activeCompany.id));
+          } else {
+            setResources(resData);
+            setRequirements(reqData);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard data:", err);
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, [activeCompany]);
 
   const handleModalClose = () => {
     setShowAddResource(false);

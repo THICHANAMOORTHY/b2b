@@ -12,11 +12,7 @@ import {
   LayoutGrid,
   CheckCircle2,
   Loader2,
-  MapPin,
-  ShieldCheck,
-  Briefcase,
   Layers,
-  Wheat,
 } from "lucide-react";
 import { useCompany } from "@/lib/CompanyContext";
 
@@ -92,6 +88,8 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
   const [createdCount, setCreatedCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const rowCounterRef = React.useRef(4);
+
   const [rows, setRows] = useState<CompanyRow[]>([
     {
       id_temp: "row-1",
@@ -103,9 +101,9 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
     {
       id_temp: "row-2",
       name: "",
-      industry: "Biomass & Bioenergy",
+      industry: "Biomass Processing & Pellets",
       location: "",
-      verificationStatus: "Organic Certified",
+      verificationStatus: "Verified",
     },
     {
       id_temp: "row-3",
@@ -117,7 +115,7 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
   ]);
 
   const handleAddRow = () => {
-    const newId = `row-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const newId = `row-${rowCounterRef.current++}`;
     setRows((prev) => [
       ...prev,
       {
@@ -132,7 +130,7 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
 
   const handleDuplicateRow = (index: number) => {
     const target = rows[index];
-    const newId = `row-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const newId = `row-${rowCounterRef.current++}`;
     const duplicate: CompanyRow = {
       ...target,
       id_temp: newId,
@@ -242,9 +240,10 @@ export function AddMultipleCompaniesModal({ onClose }: Props) {
       setTimeout(() => {
         handleClose();
       }, 1400);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setErrorMessage(err.message || "Failed to add organizations. Please check your backend connection.");
+      const msg = err instanceof Error ? err.message : "Failed to add organizations. Please check your backend connection.";
+      setErrorMessage(msg);
     } finally {
       setLoading(false);
     }

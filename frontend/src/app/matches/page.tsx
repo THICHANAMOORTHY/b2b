@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Sparkles, ArrowRight, Zap, Target, Scale, Clock, CheckCircle2, XCircle, Loader2, RefreshCw, Sprout, Wheat, Trees } from "lucide-react";
+import { ArrowRight, Zap, Target, Scale, CheckCircle2, XCircle, Loader2, RefreshCw, Sprout } from "lucide-react";
 import Link from "next/link";
 import {
   Match,
@@ -45,8 +45,34 @@ export default function Matches() {
   }, []);
 
   useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
+    let ignore = false;
+    async function initLoad() {
+      try {
+        const [m, res, req, comp] = await Promise.all([
+          fetchMatches(),
+          fetchResources(),
+          fetchRequirements(),
+          fetchCompanies(),
+        ]);
+        if (!ignore) {
+          setMatches(m);
+          setResources(res);
+          setRequirements(req);
+          setCompanies(comp);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+    initLoad();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const handleGenerateMatches = async () => {
     setGenerating(true);

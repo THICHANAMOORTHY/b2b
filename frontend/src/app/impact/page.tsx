@@ -7,17 +7,10 @@ import {
   Recycle,
   IndianRupee,
   CloudSun,
-  BookOpen,
   RefreshCw,
-  PlusCircle,
-  Package,
   Layers,
-  Sparkles,
-  Sprout,
   Trees,
-  Wheat,
 } from 'lucide-react';
-import Link from 'next/link';
 import { WasteChart, CO2Chart } from '@/components/ImpactChart';
 import { fetchResources, Resource, API_BASE_URL } from '@/lib/api';
 
@@ -27,6 +20,11 @@ interface EmissionFactor {
   source: string;
   url?: string;
   note: string;
+}
+
+interface FactorsResponse {
+  co2_factors?: { materials: EmissionFactor[] };
+  water_factors?: { materials: EmissionFactor[] };
 }
 
 interface MaterialImpactBreakdown {
@@ -60,9 +58,11 @@ const CO2_MAP: Record<string, number> = {
 };
 
 const WATER_MAP: Record<string, number> = {
-  biomass: 45.0,
-  bagasse: 50.0,
-  husk: 40.0,
+  biomass: 35.0,
+  bagasse: 40.0,
+  husk: 30.0,
+  straw: 25.0,
+  stalk: 25.0,
   copper: 130.0,
   steel: 28.0,
   iron: 28.0,
@@ -78,9 +78,11 @@ const WATER_MAP: Record<string, number> = {
 };
 
 const DISPOSAL_MAP: Record<string, number> = {
-  biomass: 8.0,
-  bagasse: 10.0,
-  husk: 8.0,
+  biomass: 15.0,
+  bagasse: 18.0,
+  husk: 14.0,
+  straw: 12.0,
+  stalk: 12.0,
   copper: 25.0,
   aluminium: 18.0,
   aluminum: 18.0,
@@ -96,7 +98,7 @@ const DISPOSAL_MAP: Record<string, number> = {
 
 export default function Impact() {
   const [resources, setResources] = useState<Resource[]>([]);
-  const [factors, setFactors] = useState<any>(null);
+  const [, setFactors] = useState<FactorsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -121,8 +123,35 @@ export default function Impact() {
   }, []);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    let ignore = false;
+    async function init() {
+      try {
+        const [resData, factorsRes] = await Promise.all([
+          fetchResources(),
+          fetch(`${API_BASE_URL}/api/emission-factors`, { cache: 'no-store' })
+            .then((r) => (r.ok ? r.json() : null))
+            .catch(() => null),
+        ]);
+        if (!ignore) {
+          setResources(resData || []);
+          if (factorsRes) {
+            setFactors(factorsRes);
+          }
+        }
+      } catch {
+        // fallback
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+          setRefreshing(false);
+        }
+      }
+    }
+    init();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -199,9 +228,6 @@ export default function Impact() {
   const waterSavedL = Math.round(totalWaterL);
   const resourcesReusedCount = resources.length;
   const disposalCostAvoidedLakh = Number((totalDisposal / 100000).toFixed(2));
-
-  const co2Materials: EmissionFactor[] = factors?.co2_factors?.materials ?? [];
-  const waterMaterials: EmissionFactor[] = factors?.water_factors?.materials ?? [];
 
   if (loading) {
     return (

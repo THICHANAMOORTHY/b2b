@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { CheckCircle2, Truck, FileText, CheckSquare, MessageSquare, MapPin, Loader2, ArrowLeft, ArrowRight, ShieldCheck, Sprout, Trees } from 'lucide-react';
 import Link from 'next/link';
+import { ArrowLeft, ArrowRight, CheckCircle2, Truck, FileText, CheckSquare, MessageSquare, MapPin, Loader2 } from 'lucide-react';
 import {
   Match,
   Resource,
@@ -15,7 +15,7 @@ import {
   updateMatchStatus,
 } from '@/lib/api';
 
-interface TransactionData {
+interface ExchangeData {
   match: Match;
   resource: Resource;
   requirement: Requirement;
@@ -24,11 +24,18 @@ interface TransactionData {
 }
 
 export default function Exchange() {
-  const [data, setData] = useState<TransactionData | null>(null);
+  const [data, setData] = useState<ExchangeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [confirming, setConfirming] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pickupDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'short', year: 'numeric',
+    });
+  });
 
   useEffect(() => {
     async function load() {
@@ -127,9 +134,6 @@ export default function Exchange() {
 
   const transportCost = Math.round(data.match.distanceKm * 8);
   const totalValue = Math.round(data.resource.quantity * data.resource.price);
-  const pickupDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  });
 
   return (
     <div className="space-y-10 pb-16 animate-in fade-in duration-500 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">

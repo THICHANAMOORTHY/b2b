@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Sprout, Loader2, CheckCircle2, Wheat, ArrowRight } from "lucide-react";
+import { X, Sprout, Loader2, CheckCircle2, Wheat } from "lucide-react";
 import { createResource } from "@/lib/api";
 import { useRouter } from "next/navigation";
 

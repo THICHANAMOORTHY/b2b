@@ -59,12 +59,12 @@ export async function fetchCompanies(): Promise<Company[]> {
     if (!error && data && data.length > 0) {
       return data as Company[];
     }
-  } catch (e) {}
+  } catch {}
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/companies`, { cache: 'no-store' });
     if (res.ok) return await res.json();
-  } catch (e) {}
+  } catch {}
 
   return [];
 }
@@ -89,10 +89,10 @@ export async function createCompany(data: Omit<Company, 'id'> & { id?: string })
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-      } catch (e) {}
+      } catch {}
       return inserted as Company;
     }
-  } catch (e) {}
+  } catch {}
 
   // 2. Fallback to local FastAPI backend
   const res = await fetch(`${API_BASE_URL}/api/companies`, {
@@ -123,10 +123,10 @@ export async function createCompaniesBulk(companies: (Omit<Company, 'id'> & { id
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-      } catch (e) {}
+      } catch {}
       return inserted as Company[];
     }
-  } catch (e) {}
+  } catch {}
 
   // 2. Fallback to local FastAPI bulk endpoint
   const res = await fetch(`${API_BASE_URL}/api/companies/bulk`, {
@@ -142,14 +142,14 @@ export async function deleteCompany(companyId: string): Promise<void> {
   // 1. Try deleting from Supabase
   try {
     await supabase.from('companies').delete().eq('id', companyId);
-  } catch (e) {}
+  } catch {}
 
   // 2. Local backend fallback
   try {
     await fetch(`${API_BASE_URL}/api/companies/${companyId}`, {
       method: 'DELETE',
     });
-  } catch (e) {}
+  } catch {}
 }
 
 export async function fetchResources(): Promise<Resource[]> {
@@ -171,12 +171,12 @@ export async function fetchResources(): Promise<Resource[]> {
     if (!error && data && data.length > 0) {
       return data.map((r) => ({ ...r, id: String(r.id) })) as Resource[];
     }
-  } catch (e) {}
+  } catch {}
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/resources`, { cache: 'no-store' });
     if (res.ok) return await res.json();
-  } catch (e) {}
+  } catch {}
 
   return [];
 }
@@ -187,12 +187,12 @@ export async function fetchRequirements(): Promise<Requirement[]> {
     if (!error && data && data.length > 0) {
       return data.map((r) => ({ ...r, id: String(r.id) })) as Requirement[];
     }
-  } catch (e) {}
+  } catch {}
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/requirements`, { cache: 'no-store' });
     if (res.ok) return await res.json();
-  } catch (e) {}
+  } catch {}
 
   return [];
 }
@@ -203,12 +203,12 @@ export async function fetchMatches(): Promise<Match[]> {
     if (!error && data && data.length > 0) {
       return data.map((r) => ({ ...r, id: String(r.id) })) as Match[];
     }
-  } catch (e) {}
+  } catch {}
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/matches`, { cache: 'no-store' });
     if (res.ok) return await res.json();
-  } catch (e) {}
+  } catch {}
 
   return [];
 }
@@ -244,10 +244,10 @@ export async function createResource(data: Omit<Resource, 'id'>): Promise<Resour
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: String(insertedLd.id), ...data }),
         });
-      } catch (e) {}
+      } catch {}
       return { ...insertedLd, id: String(insertedLd.id) } as Resource;
     }
-  } catch (e) {}
+  } catch {}
 
   // 2. Try writing to 'resources' in Supabase
   try {
@@ -264,10 +264,10 @@ export async function createResource(data: Omit<Resource, 'id'>): Promise<Resour
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(inserted),
         });
-      } catch (e) {}
+      } catch {}
       return { ...inserted, id: String(inserted.id) } as Resource;
     }
-  } catch (e) {}
+  } catch {}
 
   // 3. Fallback to local FastAPI backend
   const res = await fetch(`${API_BASE_URL}/api/resources`, {
@@ -293,10 +293,10 @@ export async function createRequirement(data: Omit<Requirement, 'id'>): Promise<
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-      } catch (e) {}
+      } catch {}
       return inserted as Requirement;
     }
-  } catch (e) {}
+  } catch {}
 
   // 2. Fallback to local FastAPI backend
   const res = await fetch(`${API_BASE_URL}/api/requirements`, {
@@ -317,34 +317,34 @@ export async function deleteResource(resourceId: string): Promise<void> {
     } else {
       await supabase.from('listing datas').delete().eq('id', resourceId);
     }
-  } catch (e) {}
+  } catch {}
 
   // 2. Call FastAPI backend delete
   try {
     await fetch(`${API_BASE_URL}/api/resources/${resourceId}`, {
       method: 'DELETE',
     });
-  } catch (e) {}
+  } catch {}
 }
 
 export async function deleteRequirement(requirementId: string): Promise<void> {
   // 1. Try deleting from Supabase
   try {
     await supabase.from('requirements').delete().eq('id', requirementId);
-  } catch (e) {}
+  } catch {}
 
   // 2. Call FastAPI backend delete
   try {
     await fetch(`${API_BASE_URL}/api/requirements/${requirementId}`, {
       method: 'DELETE',
     });
-  } catch (e) {}
+  } catch {}
 }
 
 export async function updateMatchStatus(matchId: string, status: string): Promise<void> {
   try {
     await supabase.from('matches').update({ status }).eq('id', matchId);
-  } catch (e) {}
+  } catch {}
 
   try {
     await fetch(`${API_BASE_URL}/api/matches/${matchId}/status`, {
@@ -352,14 +352,14 @@ export async function updateMatchStatus(matchId: string, status: string): Promis
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
     });
-  } catch (e) {}
+  } catch {}
 }
 
 export async function fetchImpact(): Promise<Impact> {
   try {
     const res = await fetch(`${API_BASE_URL}/api/impact`, { cache: 'no-store' });
     if (res.ok) return await res.json();
-  } catch (e) {}
+  } catch {}
 
   // Dynamic client fallback calculated purely from actual data
   try {
@@ -459,7 +459,7 @@ export async function fetchImpact(): Promise<Impact> {
         disposalCostAvoided: Number(totalDisposal.toFixed(2)),
       };
     }
-  } catch (e) {}
+  } catch {}
 
   return {
     wasteDiverted: 0,
@@ -473,5 +473,5 @@ export async function fetchImpact(): Promise<Impact> {
 export async function generateMatches(): Promise<void> {
   try {
     await fetch(`${API_BASE_URL}/api/generate-matches`, { method: 'POST' });
-  } catch (e) {}
+  } catch {}
 }

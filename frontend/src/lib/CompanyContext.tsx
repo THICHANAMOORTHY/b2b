@@ -52,8 +52,34 @@ export function CompanyProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    refreshCompanies();
-  }, [refreshCompanies]);
+    let ignore = false;
+    async function initLoad() {
+      try {
+        const data = await fetchCompanies();
+        if (!ignore) {
+          setCompanies(data);
+          const savedId = typeof window !== "undefined" ? localStorage.getItem(LOCAL_STORAGE_KEY) : null;
+          let matched = data.find((c) => c.id === savedId);
+          if (!matched && data.length > 0) {
+            matched = data.find((c) => c.id === "c1") || data[0];
+          }
+          if (matched) {
+            setActiveCompanyState(matched);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to initialize companies:", err);
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+    initLoad();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const setActiveCompany = (company: Company) => {
     setActiveCompanyState(company);

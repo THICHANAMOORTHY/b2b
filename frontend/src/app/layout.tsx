@@ -4,7 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Providers } from "@/components/Providers";
 import Link from "next/link";
-import { Sprout, ShieldCheck, HeartHandshake, Globe2, Leaf, Trees } from "lucide-react";
+import { Sprout, ShieldCheck, HeartHandshake, Trees } from "lucide-react";
 
 const outfit = Outfit({
   subsets: ["latin"],

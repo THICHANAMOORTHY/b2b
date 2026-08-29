@@ -1,4 +1,4 @@
-import { Filter, Search, MapPin, Package, ArrowRight, Sprout, Wheat, Sparkles, Trees } from 'lucide-react';
+import { Filter, Search, MapPin, ArrowRight, Sprout, Wheat } from 'lucide-react';
 import Link from 'next/link';
 import { fetchResources, fetchCompanies } from '@/lib/api';
 

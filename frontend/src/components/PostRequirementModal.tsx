@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Search, Loader2, CheckCircle2, Sprout, Wheat } from "lucide-react";
+import { X, Search, Loader2, CheckCircle2 } from "lucide-react";
 import { createRequirement, generateMatches } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
@@ -27,13 +27,12 @@ export function PostRequirementModal({ companyId, onClose }: Props) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const defaultDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    const defaultDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
     try {
       await createRequirement({
         companyId,

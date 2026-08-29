@@ -15,7 +15,6 @@ import {
   Check,
   Search,
   ArrowRight,
-  Leaf,
   Sparkles,
 } from "lucide-react";
 import { useCompany } from "@/lib/CompanyContext";

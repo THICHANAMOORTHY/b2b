@@ -30,7 +30,7 @@ export function WasteChart({ data }: Props) {
         <Tooltip
           cursor={{ fill: '#f1f5f9' }}
           contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-          formatter={(value: any) => [`${value} Tons`, 'Waste Diverted']}
+          formatter={(value) => [`${value} Tons`, 'Waste Diverted']}
         />
         <Bar dataKey="waste" name="Waste Diverted (Tons)" fill="#16a34a" radius={[6, 6, 0, 0]} />
       </BarChart>
@@ -56,7 +56,7 @@ export function CO2Chart({ data }: Props) {
         <Tooltip
           cursor={{ fill: '#f1f5f9' }}
           contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-          formatter={(value: any) => [`${value} Tons CO₂e`, 'Carbon Avoided']}
+          formatter={(value) => [`${value} Tons CO₂e`, 'Carbon Avoided']}
         />
         <Bar dataKey="co2" name="CO₂e Avoided (Tons)" fill="#0ea5e9" radius={[6, 6, 0, 0]} />
       </BarChart>
