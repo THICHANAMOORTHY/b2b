@@ -361,12 +361,112 @@ export async function fetchImpact(): Promise<Impact> {
     if (res.ok) return await res.json();
   } catch (e) {}
 
+  // Dynamic client fallback calculated purely from actual data
+  try {
+    const resources = await fetchResources();
+    if (resources && resources.length > 0) {
+      let totalWasteKg = 0;
+      let totalCo2Kg = 0;
+      let totalWaterL = 0;
+      let totalDisposal = 0;
+
+      const CO2_MAP: Record<string, number> = {
+        aluminium: 10.50,
+        aluminum: 10.50,
+        copper: 3.10,
+        steel: 1.50,
+        iron: 1.50,
+        plastic: 1.53,
+        hdpe: 1.53,
+        pp: 1.40,
+        pet: 1.60,
+        paper: 0.84,
+        cardboard: 0.84,
+        glass: 0.63,
+      };
+
+      const WATER_MAP: Record<string, number> = {
+        copper: 130.0,
+        steel: 28.0,
+        iron: 28.0,
+        aluminium: 14.0,
+        aluminum: 14.0,
+        plastic: 8.0,
+        hdpe: 8.0,
+        pp: 8.0,
+        pet: 9.0,
+        paper: 10.0,
+        cardboard: 10.0,
+        glass: 8.0,
+      };
+
+      const DISPOSAL_MAP: Record<string, number> = {
+        copper: 25.0,
+        aluminium: 18.0,
+        aluminum: 18.0,
+        steel: 12.0,
+        iron: 12.0,
+        plastic: 20.0,
+        hdpe: 20.0,
+        pp: 20.0,
+        pet: 22.0,
+        paper: 8.0,
+        cardboard: 8.0,
+      };
+
+      for (const r of resources) {
+        let qty = Number(r.quantity) || 0;
+        const unit = (r.unit || '').toLowerCase().trim();
+        if (unit === 'tons' || unit === 'ton' || unit === 't') {
+          qty = qty * 1000;
+        }
+
+        const mat = `${r.materialType || ''} ${r.name || ''}`.toLowerCase();
+        let factor = 2.50; // default conservative
+        let waterFactor = 20.0;
+        let disposalFactor = 15.0;
+
+        for (const [k, v] of Object.entries(CO2_MAP)) {
+          if (mat.includes(k)) {
+            factor = v;
+            break;
+          }
+        }
+        for (const [k, v] of Object.entries(WATER_MAP)) {
+          if (mat.includes(k)) {
+            waterFactor = v;
+            break;
+          }
+        }
+        for (const [k, v] of Object.entries(DISPOSAL_MAP)) {
+          if (mat.includes(k)) {
+            disposalFactor = v;
+            break;
+          }
+        }
+
+        totalWasteKg += qty;
+        totalCo2Kg += qty * factor;
+        totalWaterL += qty * waterFactor;
+        totalDisposal += qty * disposalFactor;
+      }
+
+      return {
+        wasteDiverted: Number((totalWasteKg / 1000).toFixed(2)),
+        co2eAvoided: Number((totalCo2Kg / 1000).toFixed(2)),
+        waterSaved: Math.round(totalWaterL),
+        resourcesReused: resources.length,
+        disposalCostAvoided: Number(totalDisposal.toFixed(2)),
+      };
+    }
+  } catch (e) {}
+
   return {
-    wasteDiverted: 1500,
-    co2eAvoided: 15750,
-    waterSaved: 21000,
-    resourcesReused: 2,
-    disposalCostAvoided: 27000,
+    wasteDiverted: 0,
+    co2eAvoided: 0,
+    waterSaved: 0,
+    resourcesReused: 0,
+    disposalCostAvoided: 0,
   };
 }
 
@@ -375,4 +475,3 @@ export async function generateMatches(): Promise<void> {
     await fetch(`${API_BASE_URL}/api/generate-matches`, { method: 'POST' });
   } catch (e) {}
 }
-

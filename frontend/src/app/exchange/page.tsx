@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { CheckCircle2, Truck, FileText, CheckSquare, MessageSquare, MapPin, Loader2, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, Truck, FileText, CheckSquare, MessageSquare, MapPin, Loader2, ArrowLeft, ArrowRight, ShieldCheck, Sprout, Trees } from 'lucide-react';
 import Link from 'next/link';
 import {
   Match,
@@ -40,7 +40,6 @@ export default function Exchange() {
           fetchCompanies(),
         ]);
 
-        // Find the most recent accepted (or any) match to show in exchange view
         const acceptedMatch: Match =
           matchesRes.find((m: Match) => m.status === 'ACCEPTED') ??
           matchesRes.find((m: Match) => m.status === 'MATCHED') ??
@@ -84,30 +83,28 @@ export default function Exchange() {
     }
   };
 
-  // Derive step state from match status
   const getStepStatus = (stepId: number) => {
     if (!data) return 'upcoming';
     const status = confirmed ? 'COMPLETED' : data.match.status;
     if (status === 'COMPLETED') return stepId <= 5 ? 'completed' : 'upcoming';
     if (status === 'ACCEPTED') return stepId <= 2 ? 'completed' : stepId === 3 ? 'current' : 'upcoming';
-    // MATCHED
     return stepId === 1 ? 'completed' : stepId === 2 ? 'current' : 'upcoming';
   };
 
   const steps = [
-    { id: 1, title: 'Match Found',       icon: CheckSquare },
-    { id: 2, title: 'Negotiation',       icon: MessageSquare },
-    { id: 3, title: 'Agreement Signed',  icon: FileText },
-    { id: 4, title: 'In Transit',        icon: Truck },
-    { id: 5, title: 'Completed',         icon: CheckCircle2 },
+    { id: 1, title: 'Bio-Synergy Matched', icon: CheckSquare },
+    { id: 2, title: 'Smart Contract & Terms', icon: MessageSquare },
+    { id: 3, title: 'Escrow Lock', icon: FileText },
+    { id: 4, title: 'Low-Emission Freight', icon: Truck },
+    { id: 5, title: 'Completed & Offset', icon: CheckCircle2 },
   ];
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-full border-4 border-amber-500 border-t-transparent animate-spin" />
-          <p className="text-slate-500 font-medium">Loading transaction...</p>
+      <div className="flex items-center justify-center min-h-[70vh]">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="w-14 h-14 rounded-full border-4 border-emerald-400 border-t-transparent animate-spin shadow-lg shadow-emerald-500/20" />
+          <p className="text-emerald-200 font-medium font-outfit text-lg">Loading circular exchange workflow...</p>
         </div>
       </div>
     );
@@ -115,10 +112,10 @@ export default function Exchange() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-center max-w-md">
-          <p className="text-amber-800 font-medium">{error}</p>
-          <Link href="/matches" className="mt-4 inline-flex items-center gap-2 text-sm text-indigo-600 font-medium hover:underline">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
+        <div className="agri-glass rounded-3xl p-8 text-center max-w-md space-y-4 border border-emerald-500/20">
+          <p className="text-slate-300 font-sans text-sm">{error}</p>
+          <Link href="/matches" className="agri-btn-primary text-xs py-2 px-4">
             <ArrowLeft className="w-4 h-4" /> Go to AI Match Center
           </Link>
         </div>
@@ -135,48 +132,50 @@ export default function Exchange() {
   });
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8 gap-4">
+    <div className="space-y-10 pb-16 animate-in fade-in duration-500 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Link href="/matches" className="text-slate-400 hover:text-slate-600 transition-colors">
-              <ArrowLeft className="w-5 h-5" />
+          <div className="flex items-center gap-3 mb-2">
+            <Link href="/matches" className="p-2 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-slate-300 hover:text-white transition-colors">
+              <ArrowLeft className="w-4 h-4" />
             </Link>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Exchange Workflow</h1>
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white font-outfit">
+              Exchange & Bio-Logistics Hub
+            </h1>
           </div>
-          <p className="text-slate-500 ml-7">
+          <p className="text-slate-300 text-sm font-sans pl-11">
             {data.resource.name} • {data.resource.quantity} {data.resource.unit} •{' '}
-            <span className={`font-medium ${confirmed ? 'text-green-600' : data.match.status === 'ACCEPTED' ? 'text-amber-600' : 'text-indigo-600'}`}>
+            <span className={`font-bold ${confirmed ? 'text-emerald-400' : data.match.status === 'ACCEPTED' ? 'text-[#f59e0b]' : 'text-teal-300'}`}>
               {confirmed ? 'Completed' : data.match.status}
             </span>
           </p>
         </div>
       </div>
 
-      {/* Stepper */}
-      <div className="bg-white p-8 rounded-2xl border shadow-sm mb-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-bl-full pointer-events-none" />
+      {/* Stepper with Delisas glow nodes */}
+      <div className="agri-card p-6 sm:p-8 relative overflow-hidden border border-emerald-500/20">
         <div className="flex items-center justify-between relative">
           {steps.map((step, index) => {
             const status = getStepStatus(step.id);
             return (
               <div key={step.id} className="flex flex-col items-center relative z-10 w-full">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 shadow-sm border-2 transition-all ${
-                  status === 'completed' ? 'bg-green-500 border-green-500 text-white' :
-                  status === 'current'   ? 'bg-white border-amber-500 text-amber-500 ring-4 ring-amber-100' :
-                  'bg-slate-50 border-slate-200 text-slate-400'
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 shadow-lg transition-all duration-300 ${
+                  status === 'completed' ? 'bg-emerald-500 text-white shadow-emerald-500/30' :
+                  status === 'current'   ? 'bg-[#f59e0b] text-white shadow-[#f59e0b]/40 ring-4 ring-[#f59e0b]/20' :
+                  'bg-white/[0.06] border border-emerald-500/20 text-slate-400'
                 }`}>
                   <step.icon className="w-5 h-5" />
                 </div>
-                <span className={`text-xs font-medium text-center leading-tight ${
-                  status === 'completed' ? 'text-green-700' :
-                  status === 'current'   ? 'text-amber-700' :
+                <span className={`text-[11px] font-bold text-center leading-tight ${
+                  status === 'completed' ? 'text-emerald-300' :
+                  status === 'current'   ? 'text-[#fcd34d]' :
                   'text-slate-400'
                 }`}>{step.title}</span>
 
                 {index < steps.length - 1 && (
                   <div className={`absolute top-6 left-[50%] w-full h-[2px] -z-10 transition-colors ${
-                    status === 'completed' ? 'bg-green-500' : 'bg-slate-200'
+                    status === 'completed' ? 'bg-emerald-500' : 'bg-emerald-500/20'
                   }`} />
                 )}
               </div>
@@ -185,104 +184,99 @@ export default function Exchange() {
         </div>
       </div>
 
-      {/* Transaction card */}
-      <div className="bg-white rounded-2xl border shadow-sm overflow-hidden flex flex-col md:flex-row">
-        {/* Left: Details */}
-        <div className="bg-slate-50 p-6 md:w-1/3 border-r space-y-5">
-          <h3 className="font-semibold text-slate-900">Transaction Details</h3>
-          <div className="space-y-4">
+      {/* Transaction Bento Grid */}
+      <div className="agri-card overflow-hidden flex flex-col md:flex-row border border-emerald-500/20">
+        
+        {/* Left Side Details */}
+        <div className="bg-gradient-to-b from-[#0e271a] to-[#071910] p-6 sm:p-8 md:w-1/3 border-b md:border-b-0 md:border-r border-emerald-500/20 space-y-6">
+          <h3 className="font-extrabold text-white font-outfit text-base">Exchange Manifest</h3>
+          
+          <div className="space-y-4 text-xs">
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-0.5">Supplier</p>
-              <p className="font-medium text-slate-900">{data.supplier.name}</p>
-              <p className="text-xs text-slate-400">{data.supplier.location}</p>
+              <p className="text-emerald-400 font-bold uppercase tracking-wider mb-1">Producer / Farm Node</p>
+              <p className="font-bold text-white text-sm">{data.supplier.name}</p>
+              <p className="text-slate-300 mt-0.5">{data.supplier.location}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-0.5">Buyer</p>
-              <p className="font-medium text-slate-900">{data.buyer.name}</p>
-              <p className="text-xs text-slate-400">{data.buyer.location}</p>
+              <p className="text-emerald-400 font-bold uppercase tracking-wider mb-1">Offtaker / Bio-Plant</p>
+              <p className="font-bold text-white text-sm">{data.buyer.name}</p>
+              <p className="text-slate-300 mt-0.5">{data.buyer.location}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-0.5">Material</p>
-              <p className="font-medium text-slate-900">{data.resource.name}</p>
-              <p className="text-xs text-slate-400">{data.resource.quantity} {data.resource.unit} • {data.resource.quality}</p>
+              <p className="text-emerald-400 font-bold uppercase tracking-wider mb-1">Feedstock Material</p>
+              <p className="font-bold text-white text-sm">{data.resource.name}</p>
+              <p className="text-slate-300 mt-0.5">{data.resource.quantity} {data.resource.unit} • {data.resource.quality}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-0.5">Deal Value</p>
+              <p className="text-emerald-400 font-bold uppercase tracking-wider mb-1">Settlement</p>
               {data.resource.price === 0
-                ? <p className="font-bold text-lg text-green-600">Free</p>
-                : <p className="font-bold text-lg text-green-600">₹{totalValue.toLocaleString('en-IN')}</p>
+                ? <p className="font-black text-xl text-emerald-400 font-outfit">Free Circular Stream</p>
+                : <p className="font-black text-xl text-emerald-400 font-outfit">₹{totalValue.toLocaleString('en-IN')}</p>
               }
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-0.5">Match Score</p>
-              <p className="font-bold text-lg text-indigo-600">{data.match.matchScore}%</p>
             </div>
           </div>
         </div>
 
-        {/* Right: Action */}
-        <div className="p-8 md:w-2/3">
+        {/* Right Action Container */}
+        <div className="p-6 sm:p-8 md:w-2/3 flex flex-col justify-between">
           {confirmed ? (
-            <div className="flex flex-col items-center justify-center h-full gap-4 py-8">
-              <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckCircle2 className="w-10 h-10 text-green-600" />
+            <div className="flex flex-col items-center justify-center h-full gap-4 py-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <CheckCircle2 className="w-8 h-8" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900">Transaction Completed!</h2>
-              <p className="text-slate-500 text-center max-w-sm">
-                This circular exchange has been recorded. Check your Impact Dashboard to see the updated sustainability metrics.
+              <h2 className="text-2xl font-black text-white font-outfit">Bio-Circularity Loop Activated!</h2>
+              <p className="text-slate-300 text-xs sm:text-sm font-sans max-w-sm">
+                Smart contract ratified and EV freight scheduled. Sustainability indicators have refreshed on the Soil & Impact dashboard.
               </p>
               <Link
                 href="/impact"
-                className="mt-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium shadow-sm transition-colors"
+                className="agri-btn-primary text-xs py-2.5 px-6 mt-2"
               >
-                View Impact Dashboard →
+                <span>View Soil & Carbon Impact</span>
+                <span className="agri-arrow-circle">
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
               </Link>
             </div>
           ) : (
-            <>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-amber-100 text-amber-700 rounded-lg">
-                  <FileText className="w-6 h-6" />
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  <FileText className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900">Sign Agreement</h2>
-                  <p className="text-sm text-slate-500">Review and confirm the logistics arrangement.</p>
+                  <h2 className="text-lg font-bold text-white font-outfit">Smart Logistics Escrow</h2>
+                  <p className="text-xs text-slate-300">Review logistics routing and sign automated bioeconomy smart contract</p>
                 </div>
               </div>
 
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 space-y-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-600 flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4" /> Pickup
+              <div className="p-4 rounded-2xl bg-white/[0.03] border border-emerald-500/15 space-y-3 text-xs">
+                <div className="flex justify-between items-center text-slate-200">
+                  <span className="text-slate-400 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-400" /> Origin Farm / Facility
                   </span>
-                  <span className="font-medium">{data.resource.location} • {pickupDate}</span>
+                  <span className="font-bold text-white">{data.resource.location} • {pickupDate}</span>
                 </div>
-                <div className="flex justify-between items-center text-sm border-t pt-3">
-                  <span className="text-slate-600 flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4" /> Delivery
+                <div className="flex justify-between items-center text-slate-200 border-t border-emerald-500/10 pt-2.5">
+                  <span className="text-slate-400 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-teal-400" /> Receiving Bio-Facility
                   </span>
-                  <span className="font-medium">{data.requirement.location} • {pickupDate}</span>
+                  <span className="font-bold text-white">{data.requirement.location} • {pickupDate}</span>
                 </div>
-                <div className="flex justify-between items-center text-sm border-t pt-3">
-                  <span className="text-slate-600">Distance</span>
-                  <span className="font-medium">{data.match.distanceKm} km</span>
+                <div className="flex justify-between items-center text-slate-200 border-t border-emerald-500/10 pt-2.5">
+                  <span className="text-slate-400">Transit Distance</span>
+                  <span className="font-bold text-white">{data.match.distanceKm} km</span>
                 </div>
-                <div className="flex justify-between items-center text-sm border-t pt-3">
-                  <span className="text-slate-600">Estimated Transport Cost</span>
-                  <span className="font-medium">₹{transportCost.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm border-t pt-3">
-                  <span className="text-slate-600">Transport Method</span>
-                  <span className="font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs">
-                    EV Truck (Low Emission)
-                  </span>
+                <div className="flex justify-between items-center text-slate-200 border-t border-emerald-500/10 pt-2.5">
+                  <span className="text-slate-400">Estimated Transport Cost</span>
+                  <span className="font-bold text-white">₹{transportCost.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3">
+              <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
                 <Link
                   href="/matches"
-                  className="px-5 py-2 border rounded-lg text-slate-600 font-medium hover:bg-slate-50 transition-colors"
+                  className="px-5 py-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 text-xs font-bold transition-all border border-emerald-500/20"
                 >
                   Back to Matches
                 </Link>
@@ -290,16 +284,13 @@ export default function Exchange() {
                   id="btn-sign-confirm"
                   onClick={handleConfirm}
                   disabled={confirming}
-                  className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium shadow-sm transition-colors flex items-center gap-2 disabled:opacity-60"
+                  className="agri-btn-primary text-xs py-2.5"
                 >
-                  {confirming
-                    ? <Loader2 className="w-4 h-4 animate-spin" />
-                    : <Truck className="w-4 h-4" />
-                  }
-                  {confirming ? 'Confirming...' : 'Sign & Schedule Logistics'}
+                  {confirming ? <Loader2 className="w-4 h-4 animate-spin" /> : <Truck className="w-4 h-4" />}
+                  <span>{confirming ? 'Ratifying...' : 'Sign Agreement & Schedule Freight'}</span>
                 </button>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>

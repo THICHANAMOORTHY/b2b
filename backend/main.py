@@ -19,12 +19,18 @@ try:
         compute_embedding,
         calculate_match_score,
     )
+    from services.impact_calculator import (
+        calculate_transaction_impact,
+        aggregate_company_impact,
+    )
 except Exception as e:
     get_model = None
     material_similarity = None
     find_matches = None
     compute_embedding = None
     calculate_match_score = None
+    calculate_transaction_impact = None
+    aggregate_company_impact = None
 
 try:
     from supabase_client import supabase
@@ -443,7 +449,7 @@ def _material_key(material_type: str) -> str:
 
 @app.get("/api/impact", response_model=schemas.ImpactResponse)
 def get_impact(db: Session = Depends(get_db)):
-    completed_matches = db.query(models.Match).filter(models.Match.status == "COMPLETED").all()
+    resources = db.query(models.Resource).all()
 
     # Per-material accumulators
     co2e_avoided_kg = 0.0
@@ -451,42 +457,31 @@ def get_impact(db: Session = Depends(get_db)):
     disposal_cost_avoided_inr = 0.0
     waste_diverted_kg = 0.0
 
-    for m in completed_matches:
-        resource = db.query(models.Resource).filter(models.Resource.id == m.resourceId).first()
-        if not resource:
-            continue
+    for r in resources:
+        qty = float(r.quantity or 0)
+        unit = (r.unit or "").lower().strip()
+        if unit in ["tons", "ton", "t"]:
+            qty_kg = qty * 1000.0
+        else:
+            qty_kg = qty
 
-        qty_kg = resource.quantity  # assumed to be in kg
-        mat_key = _material_key(resource.materialType)
+        mat_key = _material_key(r.materialType or r.name or "")
 
-        waste_diverted_kg       += qty_kg
-        co2e_avoided_kg         += qty_kg * MATERIAL_CO2_FACTORS.get(mat_key, MATERIAL_CO2_FACTORS["default"])
-        water_saved_L           += qty_kg * MATERIAL_WATER_FACTORS.get(mat_key, MATERIAL_WATER_FACTORS["default"])
+        waste_diverted_kg         += qty_kg
+        co2e_avoided_kg           += qty_kg * MATERIAL_CO2_FACTORS.get(mat_key, MATERIAL_CO2_FACTORS["default"])
+        water_saved_L             += qty_kg * MATERIAL_WATER_FACTORS.get(mat_key, MATERIAL_WATER_FACTORS["default"])
         disposal_cost_avoided_inr += qty_kg * MATERIAL_DISPOSAL_COSTS.get(mat_key, MATERIAL_DISPOSAL_COSTS["default"])
 
     waste_diverted_tons = waste_diverted_kg / 1000.0
     co2e_avoided_tons   = co2e_avoided_kg / 1000.0
-    resources_reused    = len(completed_matches)
-
-    # Base metrics — realistic seed values so the dashboard is non-trivial
-    # even before any real transactions complete.
-    # Seed assumption: 12.8 t waste already diverted historically,
-    # composed of ~60% aluminium + 40% copper (Chennai industrial average).
-    BASE_WASTE_T   = 12.8
-    BASE_CO2_T     = (BASE_WASTE_T * 0.6 * 1000 * MATERIAL_CO2_FACTORS["aluminium"]
-                    + BASE_WASTE_T * 0.4 * 1000 * MATERIAL_CO2_FACTORS["copper"]) / 1000.0
-    BASE_WATER_L   = (BASE_WASTE_T * 0.6 * 1000 * MATERIAL_WATER_FACTORS["aluminium"]
-                    + BASE_WASTE_T * 0.4 * 1000 * MATERIAL_WATER_FACTORS["copper"])
-    BASE_DISPOSAL  = (BASE_WASTE_T * 0.6 * 1000 * MATERIAL_DISPOSAL_COSTS["aluminium"]
-                    + BASE_WASTE_T * 0.4 * 1000 * MATERIAL_DISPOSAL_COSTS["copper"])
-    BASE_REUSED    = 37
+    resources_reused    = len(resources)
 
     return {
-        "wasteDiverted":      round(BASE_WASTE_T + waste_diverted_tons, 2),
-        "co2eAvoided":        round(BASE_CO2_T   + co2e_avoided_tons, 2),
-        "waterSaved":         round(BASE_WATER_L + water_saved_L, 0),
-        "resourcesReused":    BASE_REUSED + resources_reused,
-        "disposalCostAvoided": round(BASE_DISPOSAL + disposal_cost_avoided_inr, 2),
+        "wasteDiverted":      round(waste_diverted_tons, 2),
+        "co2eAvoided":        round(co2e_avoided_tons, 2),
+        "waterSaved":         round(water_saved_L, 0),
+        "resourcesReused":    resources_reused,
+        "disposalCostAvoided": round(disposal_cost_avoided_inr, 2),
     }
 
 

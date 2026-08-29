@@ -1,9 +1,10 @@
 # ♻️ Circula — AI-Powered B2B Industrial Circular Marketplace
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![Next.js](https://img.shields.io/badge/Next.js-15.0+-black.svg?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.0+-black.svg?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.0+-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Database%20%26%20Sync-3ECF8E.svg?logo=supabase&logoColor=white)](https://supabase.com)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20Sync-3ECF8E.svg?logo=supabase&logoColor=white)](https://supabase.com)
 [![SentenceTransformers](https://img.shields.io/badge/AI%20Model-all--MiniLM--L6--v2-orange.svg)](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -25,6 +26,7 @@
   - [Environment Configuration](#environment-configuration)
   - [Database Setup & Seeding](#database-setup--seeding)
   - [Running the Application](#running-the-application)
+- [Root Commands Reference](#-root-commands-reference)
 - [API Reference](#-api-reference)
 - [Frontend Pages & Features](#-frontend-pages--features)
 - [Contributing](#-contributing)
@@ -37,10 +39,11 @@
 Industrial facilities frequently pay heavy disposal fees for recyclable scrap while neighboring manufacturers import virgin materials at inflated costs and high carbon footprints.
 
 **Circula solves this by:**
-1. **Semantic Resource Mapping**: Automatically recognizing material equivalence (e.g. mapping *"copper wire scrap"* to *"Cu alloy scrap"*) using SentenceTransformer embeddings.
-2. **Hyperlocal Optimization**: Balancing freight costs and transit emissions via Haversine distance computations.
+1. **Semantic Resource Mapping**: Automatically recognizing material equivalence (e.g. mapping *"copper wire scrap"* to *"Cu alloy scrap"*) using SentenceTransformer embeddings (`all-MiniLM-L6-v2`).
+2. **Hyperlocal Optimization**: Balancing freight costs and transit emissions via Haversine distance computations (<= 200 km threshold).
 3. **Automated Match Scoring**: Providing real-time 0–100% match scores with granular factor breakdowns.
 4. **Verifiable ESG Accounting**: Translating circular transactions into avoided greenhouse gas emissions ($CO_2e$), conserved freshwater, and diverted landfill volume based on peer-reviewed Life Cycle Assessment (LCA) data.
+5. **Dual Persistence Layer**: Seamless offline-resilient local SQLite caching synchronized with cloud Supabase (PostgreSQL).
 
 ---
 
@@ -48,15 +51,15 @@ Industrial facilities frequently pay heavy disposal fees for recyclable scrap wh
 
 ```mermaid
 graph TD
-    subgraph Frontend ["Next.js 15 App Router (TypeScript + Tailwind CSS)"]
-        UI_Home["Dashboard (/)"]
+    subgraph Frontend ["Next.js 16 App Router (React 19 + TypeScript + Tailwind CSS)"]
+        UI_Home["Executive Dashboard (/)"]
         UI_Market["Marketplace (/marketplace)"]
-        UI_Matches["AI Matches (/matches)"]
-        UI_Exchange["Exchange (/exchange)"]
-        UI_Impact["ESG Impact (/impact)"]
+        UI_Matches["AI Matchmaking Room (/matches)"]
+        UI_Exchange["Exchange Tracker (/exchange)"]
+        UI_Impact["ESG & LCA Impact (/impact)"]
     end
 
-    subgraph Backend ["FastAPI Backend Engine"]
+    subgraph Backend ["FastAPI Backend Engine (Python 3.10+)"]
         API_Gateway["FastAPI Endpoints (/api)"]
         Match_Service["Matching Engine (3-Layer Pipeline)"]
         Impact_Service["LCA Impact Calculator"]
@@ -140,43 +143,48 @@ Circula calculates real-time avoided emissions and resource conservation metrics
 
 ```text
 .
-├── backend/                        # FastAPI Backend Service
+├── backend/                             # FastAPI Backend Service
 │   ├── routers/
 │   │   ├── __init__.py
-│   │   └── matches.py             # Match listing and generation router
+│   │   └── matches.py                  # Match listing and generation router
 │   ├── services/
 │   │   ├── __init__.py
-│   │   └── matching_engine.py      # AI sentence transformer & hybrid scoring engine
-│   ├── database.py                 # SQLAlchemy engine and SQLite session maker
-│   ├── models.py                   # SQLAlchemy ORM definitions
-│   ├── schemas.py                  # Pydantic schemas for request/response validation
-│   ├── supabase_client.py          # Supabase cloud database client
-│   ├── seed.py                     # Initial database seeding script
-│   ├── sync_sqlite_to_supabase.py  # SQLite to Supabase migration utility
-│   ├── main.py                     # FastAPI application entrypoint
-│   └── requirements.txt            # Python dependencies
-├── frontend/                       # Next.js 15 App Router Frontend
+│   │   ├── matching_engine.py           # AI sentence transformer & hybrid scoring engine
+│   │   └── impact_calculator.py         # Environmental impact & LCA calculator
+│   ├── scripts/
+│   │   ├── seed_supabase.py            # Supabase seeder
+│   │   └── sync_sqlite_to_supabase.py   # SQLite to Supabase migration utility
+│   ├── database.py                      # SQLAlchemy engine and SQLite session maker
+│   ├── models.py                        # SQLAlchemy ORM definitions
+│   ├── schemas.py                       # Pydantic schemas for request/response validation
+│   ├── supabase_client.py               # Supabase cloud database client
+│   ├── seed.py                          # Initial database seeding script
+│   ├── main.py                          # FastAPI application entrypoint
+│   └── requirements.txt                 # Python dependencies
+├── frontend/                            # Next.js 16 App Router Frontend
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── exchange/           # Circular exchange execution page
-│   │   │   ├── impact/             # ESG & Carbon Impact Analytics dashboard
-│   │   │   ├── marketplace/        # Surplus materials & listings catalog
-│   │   │   ├── matches/            # AI Matches recommendation screen
-│   │   │   ├── layout.tsx          # Root layout and theme shell
-│   │   │   └── page.tsx            # Main executive overview dashboard
-│   │   ├── components/             # Reusable UI components & modals
+│   │   │   ├── exchange/                # Circular exchange execution & deal tracking
+│   │   │   ├── impact/                  # ESG & Carbon Impact Analytics dashboard
+│   │   │   ├── marketplace/             # Surplus materials & listings catalog
+│   │   │   ├── matches/                 # AI Matches recommendation screen
+│   │   │   ├── globals.css              # Global styles & theme definitions
+│   │   │   ├── layout.tsx               # Root layout and theme shell
+│   │   │   └── page.tsx                 # Main executive overview dashboard
+│   │   ├── components/                  # Reusable UI components & modals
 │   │   │   ├── AddResourceModal.tsx
 │   │   │   ├── PostRequirementModal.tsx
 │   │   │   ├── AddMultipleCompaniesModal.tsx
 │   │   │   ├── ImpactChart.tsx
+│   │   │   ├── Providers.tsx
 │   │   │   └── layout/Navbar.tsx
-│   │   └── lib/                    # Supabase client, Context providers, API client
+│   │   └── lib/                         # Supabase client, API helper, Context providers
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── tailwind.config.ts
-├── supabase_schema.sql             # Supabase PostgreSQL schema definition
-├── package.json                    # Monorepo root command orchestrator
-└── README.md                       # Complete documentation
+├── supabase_schema.sql                  # Supabase PostgreSQL schema definition
+├── package.json                         # Monorepo root command orchestrator
+└── README.md                            # Complete documentation
 ```
 
 ---
@@ -184,10 +192,12 @@ Circula calculates real-time avoided emissions and resource conservation metrics
 ## 💻 Tech Stack
 
 ### Frontend:
-- **Framework**: [Next.js 15](https://nextjs.org/) (App Router, Server & Client Components)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Server & Client Components)
+- **Library**: [React 19](https://react.dev/)
 - **Language**: TypeScript 5
 - **Styling**: Tailwind CSS & Vanilla CSS Design Tokens
 - **Icons**: Lucide React
+- **Visualizations**: Recharts
 - **Data Fetching**: Native Fetch + Supabase JS Client
 
 ### Backend & AI:
@@ -260,48 +270,50 @@ Circula calculates real-time avoided emissions and resource conservation metrics
 
 1. **Initialize Local Database & Seed Sample Data:**
    ```bash
-   cd backend
-   python seed.py
-   cd ..
+   npm run seed
    ```
 
-2. *(Optional)* **Sync SQLite Data to Cloud Supabase:**
+2. **Generate AI Compatibility Matches:**
+   ```bash
+   npm run match
+   ```
+
+3. *(Optional)* **Sync SQLite Data to Cloud Supabase:**
    ```bash
    # Run supabase_schema.sql in your Supabase SQL editor first, then run:
-   cd backend
-   python sync_sqlite_to_supabase.py
-   cd ..
+   npm run sync:supabase
    ```
 
 ---
 
 ### Running the Application
 
-You can launch both the frontend and backend using root scripts:
+You can launch both the frontend and backend concurrently with a single command from the project root:
 
-#### Option 1: Root Scripts
 ```bash
-# Start FastAPI backend (Port 8000)
-npm run api
-
-# In another terminal, start Next.js frontend (Port 3000)
-npm run dev
+npm run dev:all
 ```
 
-#### Option 2: Individual Services
-- **Backend**:
-  ```bash
-  cd backend
-  uvicorn main:app --reload --port 8000
-  ```
-  API Docs will be available at: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Backend API**: [http://localhost:8000](http://localhost:8000)
+- **Interactive Swagger Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Frontend App**: [http://localhost:3000](http://localhost:3000)
 
-- **Frontend**:
-  ```bash
-  cd frontend
-  npm run dev
-  ```
-  App will be available at: [http://localhost:3000](http://localhost:3000)
+---
+
+## ⚡ Root Commands Reference
+
+The root `package.json` provides unified commands across the full stack:
+
+| Command | Description |
+| :--- | :--- |
+| `npm run dev:all` | Concurrently runs both FastAPI backend (`:8000`) and Next.js frontend (`:3000`) |
+| `npm run dev` | Starts the Next.js development server |
+| `npm run api` | Starts the FastAPI Uvicorn backend server with auto-reload |
+| `npm run seed` | Populates local SQLite database with sample industrial companies & materials |
+| `npm run match` | Triggers the AI matching engine endpoint to evaluate compatibility pairs |
+| `npm run sync:supabase` | Synchronizes local SQLite tables to your remote Supabase PostgreSQL instance |
+| `npm run build` | Builds the Next.js production bundle |
+| `npm run lint` | Runs ESLint checks across the frontend codebase |
 
 ---
 
@@ -329,12 +341,12 @@ npm run dev
 ## 🖥️ Frontend Pages & Features
 
 1. **Executive Dashboard (`/`)**:
-   - High-level circular metrics and KPI statistics.
+   - High-level circular metrics, ESG summary cards, and KPI statistics.
    - Quick resource listing and requirement submission modals.
    - Live company switcher to simulate multi-tenant industrial interactions.
 
 2. **Marketplace Catalog (`/marketplace`)**:
-   - Filterable catalog of industrial surplus, by-products, and scrap.
+   - Filterable catalog of industrial surplus, by-products, and scrap materials.
    - Location, quantity, price, and quality grade filters.
 
 3. **AI Matches Room (`/matches`)**:
@@ -347,8 +359,8 @@ npm run dev
    - Instant updating of environmental impact upon deal completion.
 
 5. **ESG Impact & Analytics (`/impact`)**:
-   - Dynamic charts visualizing carbon reduction trends and water savings.
-   - Fully cited research methodology for hackathon judges and auditors.
+   - Dynamic charts visualizing carbon reduction trends, water conservation, and waste diversion.
+   - Fully cited research methodology for hackathon judges and sustainability auditors.
 
 ---
 

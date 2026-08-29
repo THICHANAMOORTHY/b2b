@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Search, Loader2, CheckCircle2 } from "lucide-react";
+import { X, Search, Loader2, CheckCircle2, Sprout, Wheat } from "lucide-react";
 import { createRequirement, generateMatches } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
@@ -17,7 +17,7 @@ export function PostRequirementModal({ companyId, onClose }: Props) {
   const [form, setForm] = useState({
     materialType: "",
     quantity: "",
-    unit: "kg",
+    unit: "tons",
     quality: "",
     requiredDate: "",
     location: "",
@@ -26,6 +26,10 @@ export function PostRequirementModal({ companyId, onClose }: Props) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
+  const defaultDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +44,6 @@ export function PostRequirementModal({ companyId, onClose }: Props) {
         requiredDate: form.requiredDate || defaultDate,
         location: form.location,
       });
-      // Trigger AI match generation automatically
       await generateMatches();
       setSuccess(true);
       setTimeout(() => {
@@ -54,30 +57,24 @@ export function PostRequirementModal({ companyId, onClose }: Props) {
     }
   };
 
-  // Default date: 30 days from now
-  const defaultDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0];
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="agri-card w-full max-w-lg relative overflow-hidden border border-emerald-500/25 shadow-2xl bg-[#0e271a]/95">
         {/* Header */}
-        <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-bl-[100px]" />
-          <div className="flex items-center justify-between relative">
+        <div className="bg-gradient-to-r from-teal-700 to-emerald-800 p-6 text-white relative overflow-hidden border-b border-emerald-500/20">
+          <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 rounded-lg">
+              <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-white shadow-md">
                 <Search className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-xl font-bold">Post Requirement</h2>
-                <p className="text-blue-100 text-sm">Find the materials you need from the network</p>
+                <h2 className="text-xl font-black font-outfit">Post Procurement Demand</h2>
+                <p className="text-emerald-100 text-xs">AI will cross-match with crop residue & byproduct producers in real-time</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              className="p-2 rounded-full hover:bg-white/20 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -85,35 +82,35 @@ export function PostRequirementModal({ companyId, onClose }: Props) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-slate-200">
           {success ? (
             <div className="flex flex-col items-center justify-center py-8 gap-3">
-              <CheckCircle2 className="w-16 h-16 text-blue-500" />
-              <p className="text-lg font-semibold text-slate-900">Requirement Posted!</p>
-              <p className="text-slate-500 text-sm text-center">
-                AI matching engine is scanning the network for the best suppliers.
-              </p>
+              <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
+                <CheckCircle2 className="w-8 h-8" />
+              </div>
+              <p className="text-xl font-bold text-white font-outfit">Requirement Broadcasted!</p>
+              <p className="text-slate-300 text-xs text-center">AI recommendation engine has computed compatible agricultural & byproduct streams.</p>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">
-                    Material Type Needed
+                  <label className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider mb-1.5 block">
+                    Material / Feedstock Needed
                   </label>
                   <input
                     name="materialType"
                     value={form.materialType}
                     onChange={handleChange}
                     required
-                    placeholder="e.g. Copper, Aluminium, Plastic"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
+                    placeholder="e.g. Rice Husk, Cotton Stalks, Bio-Char, Fly Ash"
+                    className="w-full bg-white/[0.05] border border-emerald-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 transition"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">
-                    Quantity Needed
+                  <label className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider mb-1.5 block">
+                    Required Quantity
                   </label>
                   <input
                     name="quantity"
@@ -123,45 +120,45 @@ export function PostRequirementModal({ companyId, onClose }: Props) {
                     value={form.quantity}
                     onChange={handleChange}
                     required
-                    placeholder="800"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
+                    placeholder="250"
+                    className="w-full bg-white/[0.05] border border-emerald-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 transition"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">
+                  <label className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider mb-1.5 block">
                     Unit
                   </label>
                   <select
                     name="unit"
                     value={form.unit}
                     onChange={handleChange}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition bg-white"
+                    className="w-full bg-[#0a2316] border border-emerald-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-400 transition"
                   >
-                    <option>kg</option>
-                    <option>tons</option>
-                    <option>liters</option>
-                    <option>units</option>
-                    <option>m³</option>
+                    <option value="tons">tons (MT)</option>
+                    <option value="kg">kg</option>
+                    <option value="liters">liters</option>
+                    <option value="units">units</option>
+                    <option value="m³">m³</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">
-                    Quality Grade Required
+                  <label className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider mb-1.5 block">
+                    Quality / Minimum Grade
                   </label>
                   <input
                     name="quality"
                     value={form.quality}
                     onChange={handleChange}
                     required
-                    placeholder="e.g. Industrial Grade"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
+                    placeholder="e.g. Low Ash, Recycled Grade"
+                    className="w-full bg-white/[0.05] border border-emerald-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 transition"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">
+                  <label className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider mb-1.5 block">
                     Required By Date
                   </label>
                   <input
@@ -170,47 +167,40 @@ export function PostRequirementModal({ companyId, onClose }: Props) {
                     value={form.requiredDate || defaultDate}
                     onChange={handleChange}
                     required
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
+                    className="w-full bg-white/[0.05] border border-emerald-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 transition"
                   />
                 </div>
 
                 <div className="col-span-2">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">
-                    Delivery Location
+                  <label className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider mb-1.5 block">
+                    Receiving Facility / Bio-Hub Location
                   </label>
                   <input
                     name="location"
                     value={form.location}
                     onChange={handleChange}
                     required
-                    placeholder="e.g. Chennai South"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
+                    placeholder="e.g. Coimbatore Bio-Plant #2"
+                    className="w-full bg-white/[0.05] border border-emerald-500/20 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 transition"
                   />
                 </div>
               </div>
 
-              <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex gap-2 mt-2">
-                <Search className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-blue-700">
-                  Our AI engine will immediately scan the network and generate ranked match recommendations after you post.
-                </p>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-2 border-t border-slate-100 mt-2">
+              <div className="flex justify-end gap-3 pt-4 border-t border-emerald-500/15 mt-4">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-2.5 border rounded-lg text-slate-600 font-medium hover:bg-slate-50 transition-colors text-sm"
+                  className="px-5 py-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-slate-300 text-xs font-bold transition border border-emerald-500/20"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition-colors text-sm flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="agri-btn-primary text-xs py-2.5 px-6"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                  {loading ? "Posting & Matching..." : "Post & Find Matches"}
+                  <span>{loading ? "Broadcasting..." : "Broadcast Demand"}</span>
                 </button>
               </div>
             </>

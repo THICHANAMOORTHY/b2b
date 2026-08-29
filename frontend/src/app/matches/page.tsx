@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Sparkles, ArrowRight, Zap, Target, Scale, Clock, CheckCircle2, XCircle, Loader2, RefreshCw } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, Target, Scale, Clock, CheckCircle2, XCircle, Loader2, RefreshCw, Sprout, Wheat, Trees } from "lucide-react";
 import Link from "next/link";
 import {
   Match,
@@ -68,22 +68,16 @@ export default function Matches() {
     }
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 90) return "from-green-600 to-emerald-700";
-    if (score >= 75) return "from-indigo-600 to-purple-700";
-    return "from-slate-700 to-slate-900";
-  };
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "MATCHED":
-        return <span className="text-xs font-semibold px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full">Pending Review</span>;
+        return <span className="text-xs font-bold px-3 py-1 bg-[#f59e0b]/20 text-[#fcd34d] border border-[#f59e0b]/30 rounded-full">Pending Review</span>;
       case "ACCEPTED":
-        return <span className="text-xs font-semibold px-2 py-1 bg-green-100 text-green-700 rounded-full flex items-center gap-1"><CheckCircle2 className="w-3 h-3" />Accepted</span>;
+        return <span className="text-xs font-bold px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Synergy Accepted</span>;
       case "REJECTED":
-        return <span className="text-xs font-semibold px-2 py-1 bg-red-100 text-red-700 rounded-full flex items-center gap-1"><XCircle className="w-3 h-3" />Rejected</span>;
+        return <span className="text-xs font-bold px-3 py-1 bg-red-500/20 text-red-300 border border-red-500/30 rounded-full flex items-center gap-1"><XCircle className="w-3 h-3" /> Declined</span>;
       case "COMPLETED":
-        return <span className="text-xs font-semibold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1"><CheckCircle2 className="w-3 h-3" />Completed</span>;
+        return <span className="text-xs font-bold px-3 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-full flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Loop Closed</span>;
       default:
         return null;
     }
@@ -91,43 +85,51 @@ export default function Matches() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin" />
-          <p className="text-slate-500 font-medium">Loading matches...</p>
+      <div className="flex items-center justify-center min-h-[70vh]">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="w-14 h-14 rounded-full border-4 border-emerald-400 border-t-transparent animate-spin shadow-lg shadow-emerald-500/20" />
+          <p className="text-emerald-200 font-medium font-outfit text-lg">Scanning neural bioeconomy circularity vectors...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 max-w-5xl mx-auto">
+    <div className="space-y-10 pb-16 animate-in fade-in duration-500 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="text-center space-y-4 mb-10">
-        <div className="inline-flex items-center justify-center p-3 bg-indigo-50 rounded-full mb-2">
-          <Sparkles className="w-8 h-8 text-indigo-600" />
+      <div className="text-center space-y-4 max-w-3xl mx-auto pt-4">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 text-xs font-bold animate-agri-float">
+          <Sprout className="w-3.5 h-3.5" />
+          <span>Regenerative AI Match Center</span>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">AI Match Center</h1>
-        <p className="text-slate-500 max-w-2xl mx-auto">
-          Our recommendation engine has analyzed your requirements and identified the best circular matches based on material compatibility, proximity, and quantity.
+        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white font-outfit">
+          AI Bio & Byproduct Synergies
+        </h1>
+        <p className="text-slate-300 text-sm sm:text-base font-sans leading-relaxed">
+          Deep learning evaluates chemistry, carbon offset potential, and hauling distances to orchestrate seamless zero-waste circular loops.
         </p>
-        <button
-          id="btn-generate-matches"
-          onClick={handleGenerateMatches}
-          disabled={generating}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-          {generating ? "Scanning Network..." : "Re-run AI Engine"}
-        </button>
+        <div className="pt-2">
+          <button
+            id="btn-generate-matches"
+            onClick={handleGenerateMatches}
+            disabled={generating}
+            className="agri-btn-primary"
+          >
+            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            <span>{generating ? "Computing Neural Vectors..." : "Re-run Agritech AI Engine"}</span>
+            <span className="agri-arrow-circle">
+              <ArrowRight className="w-4 h-4" />
+            </span>
+          </button>
+        </div>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {matches.map((match) => {
           const resource = resources.find((r) => r.id === match.resourceId);
           const requirement = requirements.find((r) => r.id === match.requirementId);
           const supplier = companies.find((c) => c.id === resource?.companyId);
-          const supplierName = supplier?.name ?? "ABC Manufacturing";
+          const supplierName = supplier?.name ?? "Agri Partner";
 
           if (!resource || !requirement) return null;
 
@@ -137,132 +139,136 @@ export default function Matches() {
           return (
             <div
               key={match.id}
-              className="bg-white rounded-2xl border shadow-lg overflow-hidden flex flex-col md:flex-row relative"
+              className="agri-card overflow-hidden flex flex-col md:flex-row group border border-emerald-500/20 relative"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[100px] -z-0 pointer-events-none" />
-
-              {/* Left: Score panel */}
-              <div
-                className={`bg-gradient-to-br ${getScoreColor(match.matchScore)} text-white p-8 md:w-1/3 flex flex-col justify-center items-center text-center relative overflow-hidden shrink-0`}
-              >
-                <div className="absolute inset-0 bg-black/10" />
-                <div className="relative z-10 space-y-3">
-                  <div className="text-xs font-semibold text-white/70 tracking-widest uppercase">Match Confidence</div>
-                  <div className="text-6xl font-black">{match.matchScore}%</div>
-                  <div className="inline-flex items-center gap-1.5 bg-white/15 px-3 py-1 rounded-full text-sm font-medium">
-                    <Target className="w-4 h-4 text-green-300" />
-                    {match.matchScore >= 85 ? "Highly Recommended" : "Good Match"}
+              {/* Left Score Bento Column */}
+              <div className="bg-gradient-to-b from-[#0e271a] to-[#071910] p-8 md:w-1/3 flex flex-col justify-center items-center text-center relative border-b md:border-b-0 md:border-r border-emerald-500/20 shrink-0">
+                <div className="space-y-3 z-10">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
+                    Synergy Confidence
+                  </span>
+                  <div className="text-6xl font-black text-white font-outfit tracking-tighter">
+                    {match.matchScore}<span className="text-emerald-400 text-4xl">%</span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] border border-emerald-500/20 text-xs font-semibold text-emerald-200">
+                    <Target className="w-3.5 h-3.5 text-emerald-400" />
+                    {match.matchScore >= 85 ? "Optimal Bio-Parity" : "Compatible Stream"}
                   </div>
                   <div className="pt-2">{getStatusBadge(match.status)}</div>
                 </div>
               </div>
 
-              {/* Right: Details */}
-              <div className="p-8 md:w-2/3 flex flex-col relative z-10">
-                <div className="flex justify-between items-start mb-6 gap-4">
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2 flex-wrap">
-                      {resource.name}
-                      <span className="text-xs font-semibold px-2 py-1 bg-green-100 text-green-700 rounded">
-                        SUPPLY
-                      </span>
-                    </h2>
-                    <p className="text-slate-500 mt-1">
-                      Offered by <span className="font-medium text-slate-700">{supplierName}</span>
-                    </p>
+              {/* Right Match Analysis Details */}
+              <div className="p-6 sm:p-8 md:w-2/3 flex flex-col justify-between space-y-6">
+                <div>
+                  <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-xl sm:text-2xl font-black text-white font-outfit">
+                          {resource.name}
+                        </h2>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          SUPPLY
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 mt-1">
+                        Supplied by <span className="font-bold text-white">{supplierName}</span>
+                      </p>
+                    </div>
+
+                    {match.status === "MATCHED" && (
+                      <Link
+                        href="/exchange"
+                        className="agri-btn-secondary text-xs py-2 px-4"
+                      >
+                        <span>Start Exchange</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+                      </Link>
+                    )}
                   </div>
-                  {match.status === "MATCHED" && (
-                    <Link
-                      href="/exchange"
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-sm flex items-center gap-2 shrink-0 text-sm"
-                    >
-                      Start Exchange <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  )}
+
+                  {/* Metrics grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-emerald-500/15">
+                      <div className="flex items-center justify-between text-xs text-slate-300 mb-1">
+                        <span className="flex items-center gap-1.5 font-medium text-slate-400">
+                          <Scale className="w-3.5 h-3.5 text-emerald-400" /> Volume Match
+                        </span>
+                        <span className="font-bold text-emerald-300">{qty_pct}%</span>
+                      </div>
+                      <p className="text-base font-bold text-white font-outfit">
+                        {resource.quantity} {resource.unit}
+                      </p>
+                      <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full"
+                          style={{ width: `${qty_pct}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-emerald-500/15">
+                      <div className="flex items-center justify-between text-xs text-slate-300 mb-1">
+                        <span className="flex items-center gap-1.5 font-medium text-slate-400">
+                          <Zap className="w-3.5 h-3.5 text-[#f59e0b]" /> Haul Distance
+                        </span>
+                        <span className="text-[11px] text-slate-400">Transit Radius</span>
+                      </div>
+                      <p className="text-base font-bold text-white font-outfit">
+                        {match.distanceKm} km
+                      </p>
+                      <p className="text-[11px] text-slate-300 mt-1">
+                        Low emission transport: <strong className="text-emerald-300">₹{Math.round(match.distanceKm * 8).toLocaleString("en-IN")}</strong>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* AI Factor Tags */}
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-emerald-500/15">
+                    <span className="inline-flex items-center gap-1 text-[11px] text-emerald-200 bg-emerald-950/50 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Bio-Compatibility 40%
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-[11px] text-emerald-200 bg-emerald-950/50 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Farm Proximity 25%
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-[11px] text-emerald-200 bg-emerald-950/50 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Quantity Parity 20%
+                    </span>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <div className="flex items-center gap-2 text-slate-600 mb-2">
-                      <Scale className="w-4 h-4" />
-                      <span className="text-sm font-medium">Quantity Coverage</span>
-                    </div>
-                    <p className="text-lg font-bold text-slate-900">
-                      {resource.quantity} {resource.unit}{" "}
-                      <span className="text-sm font-normal text-slate-500">available</span>
-                    </p>
-                    {/* Mini progress bar */}
-                    <div className="mt-2 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-green-500 rounded-full transition-all"
-                        style={{ width: `${qty_pct}%` }}
-                      />
-                    </div>
-                    <p className="text-xs text-green-600 mt-1">Covers {qty_pct}% of your requirement</p>
-                  </div>
-                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <div className="flex items-center gap-2 text-slate-600 mb-2">
-                      <Zap className="w-4 h-4" />
-                      <span className="text-sm font-medium">Logistics</span>
-                    </div>
-                    <p className="text-lg font-bold text-slate-900">
-                      {match.distanceKm} km{" "}
-                      <span className="text-sm font-normal text-slate-500">away</span>
-                    </p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Est. transport: ₹{Math.round(match.distanceKm * 8).toLocaleString("en-IN")}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Score breakdown */}
-                <div className="pt-4 border-t border-slate-100 mb-6">
-                  <h4 className="text-sm font-semibold text-slate-700 mb-3">AI Analysis Factors</h4>
-                  <div className="flex flex-wrap gap-2">
-                    <div className="flex items-center gap-1.5 text-sm text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100">
-                      <CheckCircle2 className="w-4 h-4 text-green-500" /> Material Compat. (40%)
-                    </div>
-                    <div className="flex items-center gap-1.5 text-sm text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100">
-                      <CheckCircle2 className="w-4 h-4 text-green-500" /> Proximity (25%)
-                    </div>
-                    <div className="flex items-center gap-1.5 text-sm text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100">
-                      <CheckCircle2 className="w-4 h-4 text-green-500" /> Quantity (20%)
-                    </div>
-                    <div className="flex items-center gap-1.5 text-sm text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100">
-                      <Clock className="w-4 h-4 text-blue-400" /> Quality + Timing (15%)
-                    </div>
-                  </div>
-                </div>
-
-                {/* Accept / Reject */}
+                {/* Actions */}
                 {match.status === "MATCHED" && (
-                  <div className="flex gap-3 mt-auto">
+                  <div className="flex flex-wrap gap-3 pt-4">
                     <button
                       id={`btn-accept-${match.id}`}
                       onClick={() => handleUpdateStatus(match.id, "ACCEPTED")}
                       disabled={isUpdating}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-60"
+                      className="flex-1 py-2.5 px-4 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2"
                     >
-                      {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                      Accept Match
+                      {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                      Accept Synergy Match
                     </button>
                     <button
                       id={`btn-reject-${match.id}`}
                       onClick={() => handleUpdateStatus(match.id, "REJECTED")}
                       disabled={isUpdating}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-red-200 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors disabled:opacity-60"
+                      className="py-2.5 px-5 rounded-full bg-white/[0.04] hover:bg-red-500/15 border border-emerald-500/20 hover:border-red-500/30 text-slate-300 hover:text-red-400 font-bold text-xs transition-all"
                     >
-                      <XCircle className="w-4 h-4" />
-                      Reject
+                      Decline
                     </button>
                   </div>
                 )}
+
                 {match.status === "ACCEPTED" && (
                   <Link
                     href="/exchange"
-                    className="mt-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors"
+                    className="agri-btn-primary w-full text-xs py-2.5"
                   >
-                    Proceed to Exchange <ArrowRight className="w-4 h-4" />
+                    <span>Proceed to Smart Escrow & Freight Dispatch</span>
+                    <span className="agri-arrow-circle">
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </span>
                   </Link>
                 )}
               </div>
@@ -271,10 +277,12 @@ export default function Matches() {
         })}
 
         {matches.length === 0 && (
-          <div className="text-center py-20 bg-white rounded-2xl border border-dashed">
-            <Sparkles className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 font-medium">No AI matches found yet.</p>
-            <p className="text-slate-400 text-sm mt-1">Post a requirement or click "Re-run AI Engine" above.</p>
+          <div className="text-center py-20 agri-glass rounded-3xl border border-dashed border-emerald-500/30 space-y-3">
+            <Sprout className="w-12 h-12 text-emerald-400 mx-auto" />
+            <p className="text-white font-bold font-outfit text-lg">No active matches found</p>
+            <p className="text-slate-300 text-xs max-w-sm mx-auto">
+              Post an agricultural byproduct or requirement, or click &quot;Re-run Agritech AI Engine&quot; above.
+            </p>
           </div>
         )}
       </div>

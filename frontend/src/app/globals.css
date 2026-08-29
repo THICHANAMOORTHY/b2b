@@ -2,96 +2,224 @@
 
 @layer base {
   :root {
-    --background: #f8fafc;
-    --foreground: #0f172a;
-    --border: #e2e8f0;
-    --muted-foreground: #64748b;
+    --font-outfit: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+    
+    /* Delisas Agriculture & Bioeconomy Theme Palette */
+    --forest-deep: #071910;
+    --forest-surface: #0e271a;
+    --forest-card: rgba(16, 42, 29, 0.85);
+    --forest-border: rgba(52, 211, 153, 0.15);
+    
+    --sand-cream: #faf9f5;
+    --sand-surface: #f4f2ea;
+    
+    --sage-emerald: #10b981;
+    --sage-glow: rgba(16, 185, 129, 0.3);
+    
+    --harvest-gold: #f59e0b;
+    --harvest-glow: rgba(245, 158, 11, 0.3);
+    
+    --meadow-lime: #84cc16;
   }
 
   * {
-    border-color: var(--border);
-  }
-
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
+    border-color: rgba(52, 211, 153, 0.12);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  body {
+    background-color: var(--forest-deep);
+    color: #f3f7f4;
+    font-family: var(--font-outfit), sans-serif;
+  }
+
   h1, h2, h3, h4, h5, h6 {
-    letter-spacing: -0.025em;
+    font-family: var(--font-outfit), sans-serif;
+    letter-spacing: -0.03em;
+    font-weight: 800;
   }
 }
 
 @layer utilities {
-  .glass {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+  /* Delisas Organic Glass Surfaces */
+  .agri-glass {
+    background: rgba(14, 38, 26, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(52, 211, 153, 0.18);
   }
 
-  .gradient-border {
+  .agri-glass-pill {
+    background: rgba(10, 29, 19, 0.88);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(52, 211, 153, 0.22);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Human-Crafted Buttons */
+  .agri-btn-primary {
     position: relative;
-    background: white;
-  }
-  .gradient-border::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, #16a34a, #0ea5e9);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  .text-gradient-green {
-    background: linear-gradient(135deg, #16a34a, #10b981);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.6rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
-  .animate-in {
-    animation: fadeSlideIn 0.4s ease-out forwards;
+  .agri-btn-primary:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 15px 35px -5px rgba(16, 185, 129, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    background: linear-gradient(135deg, #34d399 0%, #059669 100%);
   }
 
-  @keyframes fadeSlideIn {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .agri-btn-primary:active {
+    transform: translateY(0) scale(0.98);
   }
 
-  .card-hover {
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  .agri-btn-harvest {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.6rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  .card-hover:hover {
-    box-shadow: 0 8px 32px -4px rgba(0,0,0,0.12);
+
+  .agri-btn-harvest:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 15px 35px -5px rgba(245, 158, 11, 0.6);
+  }
+
+  .agri-btn-secondary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #f3f7f4;
+    border: 1px solid rgba(52, 211, 153, 0.2);
+    backdrop-filter: blur(10px);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .agri-btn-secondary:hover {
+    background: rgba(52, 211, 153, 0.15);
+    border-color: rgba(52, 211, 153, 0.4);
     transform: translateY(-2px);
+    color: #ffffff;
+  }
+
+  /* Animated Trailing Badge Circle */
+  .agri-arrow-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .agri-btn-primary:hover .agri-arrow-circle,
+  .agri-btn-harvest:hover .agri-arrow-circle,
+  .agri-btn-secondary:hover .agri-arrow-circle {
+    transform: translateX(3px) rotate(45deg);
+  }
+
+  /* Delisas Tactile Bento Cards */
+  .agri-card {
+    background: rgba(14, 38, 26, 0.7);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(52, 211, 153, 0.14);
+    border-radius: 1.85rem;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+    transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .agri-card:hover {
+    border-color: rgba(52, 211, 153, 0.4);
+    box-shadow: 0 20px 45px -12px rgba(16, 185, 129, 0.22), 0 0 20px -5px rgba(16, 185, 129, 0.15);
+    transform: translateY(-4px);
+  }
+
+  .agri-card-gold:hover {
+    border-color: rgba(245, 158, 11, 0.45);
+    box-shadow: 0 20px 45px -12px rgba(245, 158, 11, 0.25);
+    transform: translateY(-4px);
+  }
+
+  /* Floating Tag Pill */
+  .agri-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Floating natural animation */
+  @keyframes agriFloat {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  .animate-agri-float {
+    animation: agriFloat 5s ease-in-out infinite;
+  }
+
+  .animate-agri-float-delayed {
+    animation: agriFloat 6.5s ease-in-out infinite 1.8s;
   }
 }
 
-/* Scrollbar styling */
+/* Custom Forest scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #05140d;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+  background: #143825;
+  border-radius: 9999px;
+  border: 2px solid #05140d;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #1e5237;
 }

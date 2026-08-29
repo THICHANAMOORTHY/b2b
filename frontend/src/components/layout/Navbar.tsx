@@ -3,21 +3,20 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Leaf,
+  Sprout,
   LayoutDashboard,
   Store,
-  Sparkles,
   Truck,
   LineChart,
   Menu,
   X,
-  Bell,
-  Building2,
   ChevronDown,
   PlusCircle,
   Check,
   Search,
-  ShieldCheck,
+  ArrowRight,
+  Leaf,
+  Sparkles,
 } from "lucide-react";
 import { useCompany } from "@/lib/CompanyContext";
 
@@ -26,7 +25,7 @@ const navItems = [
   { name: "Marketplace", href: "/marketplace", icon: Store },
   { name: "AI Matches", href: "/matches", icon: Sparkles },
   { name: "Exchange", href: "/exchange", icon: Truck },
-  { name: "Impact", href: "/impact", icon: LineChart },
+  { name: "Soil & Impact", href: "/impact", icon: LineChart },
 ];
 
 export function Navbar() {
@@ -38,7 +37,6 @@ export function Navbar() {
 
   const { companies, activeCompany, setActiveCompany, openAddCompanyModal } = useCompany();
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -50,7 +48,7 @@ export function Navbar() {
   }, []);
 
   const getInitials = (name?: string) => {
-    if (!name) return "CO";
+    if (!name) return "AG";
     const parts = name.trim().split(" ");
     if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
     return name.substring(0, 2).toUpperCase();
@@ -64,218 +62,235 @@ export function Navbar() {
   );
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-md shadow-sm">
-      <div className="container mx-auto flex h-16 items-center px-4 lg:px-8">
-        {/* Logo */}
-        <Link href="/" className="mr-8 flex items-center gap-2.5 flex-shrink-0">
-          <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-sm">
-            <Leaf className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-xl font-black tracking-tight bg-gradient-to-r from-green-700 to-emerald-500 bg-clip-text text-transparent">
-            Circula
-          </span>
-        </Link>
+    <header className="sticky top-3.5 z-50 w-full px-3 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="agri-glass-pill rounded-full px-3.5 sm:px-5 py-2.5 flex items-center justify-between gap-2 shadow-2xl transition-all duration-300">
+          
+          {/* Brand Logo - Delisas Agriculture style */}
+          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition-transform duration-300">
+              <Sprout className="h-5 w-5 text-white" />
+            </div>
+            <div className="flex items-baseline">
+              <span className="text-xl font-black tracking-tight text-white font-outfit">
+                Circula
+              </span>
+              <span className="text-emerald-400 text-xl font-black">.</span>
+            </div>
+          </Link>
 
-        {/* Desktop nav links */}
-        <div className="hidden md:flex flex-1 items-center gap-1 text-sm font-medium">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
-                  isActive
-                    ? "bg-green-50 text-green-700 font-semibold"
-                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
-                }`}
-              >
-                <item.icon className="h-4 w-4" />
-                <span>{item.name}</span>
-              </Link>
-            );
-          })}
-        </div>
+          {/* Desktop Nav Links - Natural capsule pill bar */}
+          <nav className="hidden lg:flex items-center gap-1.5 p-1 rounded-full bg-white/[0.04] border border-emerald-500/15">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`relative flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-tight transition-all duration-300 ${
+                    isActive
+                      ? "bg-emerald-500/25 text-emerald-300 shadow-sm border border-emerald-500/30"
+                      : "text-slate-300 hover:text-white hover:bg-white/[0.06]"
+                  }`}
+                >
+                  <item.icon className={`h-3.5 w-3.5 ${isActive ? "text-emerald-400" : "text-slate-400"}`} />
+                  <span>{item.name}</span>
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
 
-        {/* Right side: Session Switcher & Add Companies button */}
-        <div className="ml-auto flex items-center gap-3">
-          {/* Quick Add Multiple Companies button */}
-          <button
-            onClick={openAddCompanyModal}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-all shadow-sm"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span>Add Companies</span>
-          </button>
+          {/* Right Action Island */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            
+            {/* Live Indicator Pill */}
+            <div className="hidden xl:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 text-[11px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Bio-Matcher Live</span>
+            </div>
 
-          {/* Notification bell */}
-          <button className="relative p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-green-500 rounded-full border-2 border-white"></span>
-          </button>
-
-          {/* Company Session Dropdown */}
-          <div className="relative" ref={dropdownRef}>
+            {/* Quick Add Company Button */}
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2.5 p-1.5 pl-2 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-left group"
-              title="Switch Active Company Session"
+              onClick={openAddCompanyModal}
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-200 hover:text-white bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/30 rounded-full transition-all duration-300 shadow-sm"
+              title="Add Multiple Enterprises / Farms"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-slate-800 to-slate-950 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-sm">
-                {getInitials(activeCompany?.name)}
-              </div>
-              <div className="hidden sm:block text-xs">
-                <div className="flex items-center gap-1">
-                  <p className="font-bold text-slate-800 leading-none truncate max-w-[130px]">
-                    {activeCompany?.name || "Select Company"}
+              <PlusCircle className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Add Farms & Hubs</span>
+            </button>
+
+            {/* Active Company Pill & Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center gap-2 p-1.5 pr-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-emerald-500/20 transition-all duration-300 group"
+                title="Switch Active Session"
+              >
+                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-700 to-teal-900 border border-emerald-400/30 flex items-center justify-center text-white text-[10px] font-black shadow-sm">
+                  {getInitials(activeCompany?.name)}
+                </div>
+                <div className="hidden sm:block text-left">
+                  <p className="font-bold text-slate-100 text-xs leading-none truncate max-w-[110px]">
+                    {activeCompany?.name || "Select Profile"}
+                  </p>
+                  <p className="text-emerald-400/80 text-[10px] truncate max-w-[110px] mt-0.5">
+                    {activeCompany?.industry || "Workspace"}
                   </p>
                 </div>
-                <p className="text-slate-400 text-[10px] mt-0.5 truncate max-w-[130px]">
-                  {activeCompany?.industry || "Active Session"}
-                </p>
-              </div>
-              <ChevronDown
-                className={`w-3.5 h-3.5 text-slate-400 transition-transform ${
-                  dropdownOpen ? "rotate-180 text-slate-700" : ""
-                }`}
-              />
-            </button>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-300 ${
+                    dropdownOpen ? "rotate-180 text-white" : ""
+                  }`}
+                />
+              </button>
 
-            {/* Dropdown Menu */}
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-bold text-slate-800">Company Sessions</p>
-                    <p className="text-[11px] text-slate-400">Switch workspace profile</p>
+              {/* Delisas Dark Dropdown Menu */}
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2.5 w-80 agri-glass rounded-3xl shadow-2xl border border-emerald-500/25 py-3 z-50 animate-in fadeSlideIn">
+                  <div className="px-4 pb-2.5 border-b border-emerald-500/15 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-bold text-white uppercase tracking-wider">Enterprise & Farm Session</p>
+                      <p className="text-[11px] text-slate-400">Switch operational perspective</p>
+                    </div>
+                    <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                      {companies.length} Active
+                    </span>
                   </div>
-                  <span className="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-                    {companies.length} Total
-                  </span>
-                </div>
 
-                {/* Search */}
-                <div className="px-3 pt-2 pb-1">
-                  <div className="relative">
-                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      placeholder="Search company session..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                    />
+                  {/* Search Bar */}
+                  <div className="px-3 pt-2.5 pb-1.5">
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="Search farm, factory, hub..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-8 pr-3 py-1.5 text-xs bg-white/[0.05] border border-emerald-500/20 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Companies List */}
+                  <div className="max-h-56 overflow-y-auto px-2 py-1 space-y-1">
+                    {filteredCompanies.map((c) => {
+                      const isSelected = activeCompany?.id === c.id;
+                      return (
+                        <button
+                          key={c.id}
+                          onClick={() => {
+                            setActiveCompany(c);
+                            setDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between p-2 rounded-2xl text-left transition-all ${
+                            isSelected
+                              ? "bg-emerald-500/20 text-white font-bold border border-emerald-500/40 shadow-sm"
+                              : "hover:bg-white/[0.06] text-slate-300"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div
+                              className={`w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-black ${
+                                isSelected
+                                  ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
+                                  : "bg-white/10 text-slate-300"
+                              }`}
+                            >
+                              {getInitials(c.name)}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs truncate font-semibold">{c.name}</p>
+                              <p className="text-[10px] text-slate-400 truncate">
+                                {c.industry} • {c.location}
+                              </p>
+                            </div>
+                          </div>
+                          {isSelected && <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />}
+                        </button>
+                      );
+                    })}
+                    {filteredCompanies.length === 0 && (
+                      <p className="text-center text-xs text-slate-400 py-4">No organizations found</p>
+                    )}
+                  </div>
+
+                  {/* Add Multiple Companies Trigger */}
+                  <div className="pt-2 mt-2 border-t border-emerald-500/15 px-3">
+                    <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        openAddCompanyModal();
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-700 hover:brightness-110 rounded-xl shadow-lg shadow-emerald-500/25 transition-all"
+                    >
+                      <PlusCircle className="w-3.5 h-3.5" />
+                      + Add Multiple Organizations
+                    </button>
                   </div>
                 </div>
-
-                {/* Company list */}
-                <div className="max-h-56 overflow-y-auto px-2 py-1 space-y-1">
-                  {filteredCompanies.map((c) => {
-                    const isSelected = activeCompany?.id === c.id;
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={() => {
-                          setActiveCompany(c);
-                          setDropdownOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all ${
-                          isSelected
-                            ? "bg-emerald-50 text-emerald-950 font-semibold border border-emerald-200"
-                            : "hover:bg-slate-50 text-slate-700"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div
-                            className={`w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-bold ${
-                              isSelected
-                                ? "bg-emerald-600 text-white shadow-sm"
-                                : "bg-slate-100 text-slate-600"
-                            }`}
-                          >
-                            {getInitials(c.name)}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-xs truncate font-medium">{c.name}</p>
-                            <p className="text-[10px] text-slate-400 truncate">
-                              {c.industry} • {c.location}
-                            </p>
-                          </div>
-                        </div>
-                        {isSelected && <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />}
-                      </button>
-                    );
-                  })}
-                  {filteredCompanies.length === 0 && (
-                    <p className="text-center text-xs text-slate-400 py-4">No companies found</p>
-                  )}
-                </div>
-
-                {/* Add Multiple Companies Trigger */}
-                <div className="pt-2 mt-1 border-t border-slate-100 px-2">
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      openAddCompanyModal();
-                    }}
-                    className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 rounded-xl shadow-sm transition-all"
-                  >
-                    <PlusCircle className="w-3.5 h-3.5" />
-                    + Add Multiple Companies
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile menu toggle */}
-          <button
-            className="md:hidden p-2 rounded-lg hover:bg-slate-100 text-slate-600"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile nav */}
-      {menuOpen && (
-        <div className="md:hidden px-4 pb-4 pt-2 border-t border-slate-100 space-y-2 bg-white">
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between mb-2">
-            <div>
-              <p className="text-xs text-slate-400 font-medium">Current Session</p>
-              <p className="text-sm font-bold text-slate-800">{activeCompany?.name || "None"}</p>
-              <p className="text-xs text-slate-500">{activeCompany?.industry}</p>
+              )}
             </div>
+
+            {/* Mobile Menu Button */}
             <button
-              onClick={() => {
-                setMenuOpen(false);
-                openAddCompanyModal();
-              }}
-              className="text-xs font-semibold bg-emerald-600 text-white px-3 py-1.5 rounded-lg shadow-sm"
+              className="lg:hidden p-2 rounded-full bg-white/[0.06] border border-emerald-500/20 text-slate-300 hover:text-white"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
             >
-              + Add Companies
+              {menuOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
             </button>
           </div>
-
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                  isActive ? "bg-green-50 text-green-700 font-semibold" : "text-slate-600 hover:bg-slate-100"
-                }`}
-              >
-                <item.icon className="h-5 w-5" />
-                {item.name}
-              </Link>
-            );
-          })}
         </div>
-      )}
-    </nav>
+
+        {/* Mobile Navigation Drawer */}
+        {menuOpen && (
+          <div className="lg:hidden mt-2 p-4 agri-glass rounded-3xl border border-emerald-500/20 space-y-3 shadow-2xl animate-in fadeSlideIn">
+            <div className="p-3 bg-white/[0.04] rounded-2xl border border-emerald-500/20 flex items-center justify-between">
+              <div>
+                <p className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider">Active Workspace</p>
+                <p className="text-sm font-bold text-white">{activeCompany?.name || "None"}</p>
+                <p className="text-xs text-slate-400">{activeCompany?.industry}</p>
+              </div>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  openAddCompanyModal();
+                }}
+                className="text-xs font-bold bg-emerald-500 text-white px-3 py-1.5 rounded-full shadow-sm"
+              >
+                + Add
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={`flex items-center justify-between px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
+                      isActive
+                        ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/30"
+                        : "text-slate-300 hover:bg-white/[0.06]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.name}</span>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 opacity-60" />
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
   );
 }
