@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Circula — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{
+    --steel-mist:#EEF1EF;
+    --surface:#FFFFFF;
+    --ink:#12181B;
+    --ink-muted:#5B6763;
+    --patina:#2F6D53;
+    --patina-dark:#1F4A39;
+    --amber:#B96A2C;
+    --alert:#B3261E;
+    --border:#DDE3DF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--steel-mist);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+  }
+  .font-display{font-family:'Space Grotesk', sans-serif;}
+  .font-mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* subtle blueprint grid on the page background */
+  .grid-bg{
+    background-image:
+      linear-gradient(rgba(18,24,27,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(18,24,27,0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* data-plate KPI card: rivet-line bottom, stamped label */
+  .data-plate{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    position:relative;
+  }
+  .data-plate::after{
+    content:"";
+    position:absolute; left:16px; right:16px; bottom:14px;
+    height:1px;
+    background: repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 10px);
+  }
+
+  /* ledger row: manifest ticket styling with perforated edge */
+  .ledger-row{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-left:3px solid var(--patina);
+    border-radius:2px;
+  }
+  .ledger-row.free{ border-left-color: var(--amber); }
+
+  /* the signature element: rotated certification stamp for match score */
+  .stamp{
+    border:2.5px solid var(--patina);
+    color:var(--patina);
+    border-radius:9999px;
+    transform: rotate(-8deg);
+    font-family:'IBM Plex Mono', monospace;
+    letter-spacing:0.04em;
+    position:relative;
+  }
+  .stamp::before{
+    content:"";
+    position:absolute; inset:4px;
+    border:1px dashed var(--patina);
+    border-radius:9999px;
+    opacity:0.5;
+  }
+
+  .nav-item{
+    color:var(--ink-muted);
+    border-left:2px solid transparent;
+  }
+  .nav-item.active{
+    color:var(--ink);
+    background:rgba(47,109,83,0.07);
+    border-left:2px solid var(--patina);
+  }
+  .nav-item:hover:not(.active){
+    background:rgba(18,24,27,0.03);
+  }
+
+  .swatch{ width:8px; height:8px; border-radius:2px; }
+
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:#C7D0CB; border-radius:4px; }
+</style>
+</head>
+<body class="min-h-screen grid-bg">
+
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="hidden md:flex md:w-60 shrink-0 flex-col border-r" style="border-color:var(--border); background:var(--surface);">
+    <div class="h-16 flex items-center gap-2 px-5 border-b" style="border-color:var(--border);">
+      <div class="w-7 h-7 rounded-sm flex items-center justify-center font-display font-bold text-white text-sm" style="background:var(--patina);">C</div>
+      <span class="font-display font-semibold text-[15px] tracking-tight">Circula</span>
+    </div>
+
+    <nav class="flex-1 py-4">
+      <div class="px-5 pb-2 font-mono text-[10px] uppercase tracking-widest" style="color:var(--ink-muted);">Operations</div>
+      <a class="nav-item active flex items-center gap-3 px-5 py-2.5 text-[13.5px] font-medium" href="#">
+        <span class="swatch" style="background:var(--patina);"></span> Dashboard
+      </a>
+      <a class="nav-item flex items-center gap-3 px-5 py-2.5 text-[13.5px] font-medium" href="#">
+        <span class="swatch" style="background:var(--amber);"></span> Marketplace
+      </a>
+      <a class="nav-item flex items-center gap-3 px-5 py-2.5 text-[13.5px] font-medium" href="#">
+        <span class="swatch" style="background:#5B7FBE;"></span> AI Matches
+      </a>
+      <a class="nav-item flex items-center gap-3 px-5 py-2.5 text-[13.5px] font-medium" href="#">
+        <span class="swatch" style="background:#8B5FBF;"></span> Exchange
+      </a>
+      <a class="nav-item flex items-center gap-3 px-5 py-2.5 text-[13.5px] font-medium" href="#">
+        <span class="swatch" style="background:var(--ink);"></span> Impact
+      </a>
+    </nav>
+
+    <div class="p-4 border-t text-[11px] font-mono" style="border-color:var(--border); color:var(--ink-muted);">
+      NETWORK STATUS: <span style="color:var(--patina);">● LIVE</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 min-w-0">
+
+    <!-- TOP BAR -->
+    <header class="h-16 flex items-center justify-between px-5 md:px-8 border-b" style="border-color:var(--border); background:var(--surface);">
+      <div>
+        <h1 class="font-display font-semibold text-[17px] leading-none">ABC Manufacturing</h1>
+        <p class="font-mono text-[11px] mt-1" style="color:var(--ink-muted);">CHENNAI, TN — REG. NO. CIR-2026-0417</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="px-3 py-1.5 rounded-sm text-[12.5px] font-medium border" style="border-color:var(--border); color:var(--ink-muted);">Notifications</button>
+        <div class="w-9 h-9 rounded-sm flex items-center justify-center font-mono font-semibold text-[13px] text-white" style="background:var(--ink);">AM</div>
+      </div>
+    </header>
+
+    <div class="px-5 md:px-8 py-6 md:py-8 max-w-6xl">
+
+      <!-- KPI DATA PLATES -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
+        <div class="data-plate p-4 pb-6">
+          <div class="font-mono text-[10.5px] uppercase tracking-widest" style="color:var(--ink-muted);">Active Resources</div>
+          <div class="font-display font-bold text-[28px] mt-1" style="color:var(--ink);">04</div>
+        </div>
+        <div class="data-plate p-4 pb-6">
+          <div class="font-mono text-[10.5px] uppercase tracking-widest" style="color:var(--ink-muted);">Requirements</div>
+          <div class="font-display font-bold text-[28px] mt-1" style="color:var(--ink);">02</div>
+        </div>
+        <div class="data-plate p-4 pb-6">
+          <div class="font-mono text-[10.5px] uppercase tracking-widest" style="color:var(--ink-muted);">Pending Matches</div>
+          <div class="font-display font-bold text-[28px] mt-1" style="color:var(--patina);">03</div>
+        </div>
+        <div class="data-plate p-4 pb-6">
+          <div class="font-mono text-[10.5px] uppercase tracking-widest" style="color:var(--ink-muted);">Completed</div>
+          <div class="font-display font-bold text-[28px] mt-1" style="color:var(--ink);">12</div>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-5 gap-6">
+
+        <!-- RESOURCE LEDGER -->
+        <section class="lg:col-span-3">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-display font-semibold text-[15px]">My Resources</h2>
+            <button class="px-3 py-1.5 rounded-sm text-[12.5px] font-medium text-white" style="background:var(--patina);">+ Add Resource</button>
+          </div>
+
+          <div class="space-y-2.5">
+            <div class="ledger-row p-4 flex items-center justify-between">
+              <div>
+                <div class="font-medium text-[14px]">Copper Scrap</div>
+                <div class="font-mono text-[11.5px] mt-0.5" style="color:var(--ink-muted);">1,000 KG · GRADE: INDUSTRIAL · CHENNAI</div>
+              </div>
+              <div class="text-right">
+                <div class="font-mono font-semibold text-[14px]" style="color:var(--ink);">₹680/kg</div>
+                <div class="font-mono text-[10.5px]" style="color:var(--patina);">AVAILABLE NOW</div>
+              </div>
+            </div>
+
+            <div class="ledger-row p-4 flex items-center justify-between">
+              <div>
+                <div class="font-medium text-[14px]">Aluminium Scrap 6061</div>
+                <div class="font-mono text-[11.5px] mt-0.5" style="color:var(--ink-muted);">500 KG · GRADE: 6061 · CHENNAI</div>
+              </div>
+              <div class="text-right">
+                <div class="font-mono font-semibold text-[14px]" style="color:var(--ink);">₹45/kg</div>
+                <div class="font-mono text-[10.5px]" style="color:var(--patina);">AVAILABLE NOW</div>
+              </div>
+            </div>
+
+            <div class="ledger-row free p-4 flex items-center justify-between">
+              <div>
+                <div class="font-medium text-[14px]">Packaging Offcuts</div>
+                <div class="font-mono text-[11.5px] mt-0.5" style="color:var(--ink-muted);">220 KG · GRADE: MIXED · CHENNAI</div>
+              </div>
+              <div class="text-right">
+                <div class="font-mono font-semibold text-[14px]" style="color:var(--amber);">FREE</div>
+                <div class="font-mono text-[10.5px]" style="color:var(--ink-muted);">EXPIRES 12 SEP</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FEATURED MATCH: SIGNATURE STAMP ELEMENT -->
+        <section class="lg:col-span-2">
+          <h2 class="font-display font-semibold text-[15px] mb-3">Top Match</h2>
+          <div class="p-5 rounded-sm border" style="background:var(--surface); border-color:var(--border);">
+            <div class="flex items-start justify-between">
+              <div>
+                <div class="font-mono text-[10.5px] uppercase tracking-widest" style="color:var(--ink-muted);">Manifest</div>
+                <div class="font-medium text-[14px] mt-1">Copper Scrap → XYZ Components</div>
+                <div class="font-mono text-[11.5px] mt-2" style="color:var(--ink-muted);">
+                  800 KG REQUESTED &middot; 18 KM &middot; EST. TRANSPORT ₹640
+                </div>
+              </div>
+              <div class="stamp w-[74px] h-[74px] shrink-0 flex flex-col items-center justify-center text-center leading-none ml-3">
+                <span class="text-[15px] font-bold">94%</span>
+                <span class="text-[6.5px] mt-1 uppercase">Certified</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t space-y-1.5" style="border-color:var(--border);">
+              <div class="flex justify-between text-[11.5px] font-mono">
+                <span style="color:var(--ink-muted);">MATERIAL</span><span>98%</span>
+              </div>
+              <div class="h-1 rounded-full" style="background:var(--border);">
+                <div class="h-1 rounded-full" style="width:98%; background:var(--patina);"></div>
+              </div>
+              <div class="flex justify-between text-[11.5px] font-mono pt-1">
+                <span style="color:var(--ink-muted);">DISTANCE</span><span>90%</span>
+              </div>
+              <div class="h-1 rounded-full" style="background:var(--border);">
+                <div class="h-1 rounded-full" style="width:90%; background:var(--patina);"></div>
+              </div>
+            </div>
+
+            <button class="mt-4 w-full py-2 rounded-sm text-[13px] font-medium text-white" style="background:var(--patina-dark);">
+              Review Manifest
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
